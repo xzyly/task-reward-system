@@ -12,8 +12,6 @@ router.get('/tasks', (req, res) => {
   });
 });
 
-module.exports = router;
-
 // 获取单个任务详情
 router.get('/tasks/:id', (req, res) => {
     const id = req.params.id;
@@ -80,3 +78,75 @@ router.post('/tasks/:id/finish', (req, res) => {
     );
   });
 });
+
+// 获取我接的任务
+router.get('/tasks/my/:takerId', (req, res) => {
+  const takerId = req.params.takerId;
+  
+  // 参数校验
+  if (!takerId || isNaN(takerId)) {
+    return res.status(400).json({ error: 'Invalid taker_id parameter' });
+  }
+
+  db.all(
+    'SELECT * FROM task WHERE taker_id = ? ORDER BY created_at DESC', 
+    [takerId], 
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({
+        message: 'My tasks retrieved successfully',
+        count: rows.length,
+        tasks: rows
+      });
+    }
+  );
+});
+
+// 发布新任务
+router.post('/tasks', (req, res) => {
+  const { title, description, reward, min_level, publisher_id } = req.body;
+
+  // 参数校验
+  if (!title || !description || !reward || !publisher_id) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: title, description, reward, publisher_id' 
+    });
+  }
+
+  if (isNaN(reward) || reward <= 0) {
+    return res.status(400).json({ error: 'Reward must be a positive number' });
+  }
+
+  if (isNaN(publisher_id) || publisher_id <= 0) {
+    return res.status(400).json({ error: 'Invalid publisher_id' });
+  }
+
+  // 设置默认值
+  const minLevel = min_level || 1;
+
+  db.run(
+    `INSERT INTO task (title, description, reward, min_level, status, publisher_id) 
+     VALUES (?, ?, ?, ?, 'OPEN', ?)`,
+    [title, description, reward, minLevel, publisher_id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      
+      // 返回新创建的任务信息
+      db.get('SELECT * FROM task WHERE id = ?', [this.lastID], (err, row) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.status(201).json({
+          message: 'Task created successfully',
+          task: row
+        });
+      });
+    }
+  );
+});
+
+module.exports = router;

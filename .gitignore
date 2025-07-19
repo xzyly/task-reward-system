@@ -1,6 +1,8 @@
-# 依赖目录，能通过 package.json 重装，不用存仓库
-node_modules/  
-# 数据库文件，本地数据不共享
-db.sqlite  
-# 如果有日志、临时文件也可加，比如：
-*.log  
+# 依赖目录
+node_modules/
+
+# 数据库文件
+db.sqlite
+
+# 日志文件
+*.log

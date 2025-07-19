@@ -1,0 +1,8 @@
+# 依赖目录
+node_modules/
+
+# 数据库文件
+db.sqlite
+
+# 日志文件
+*.log

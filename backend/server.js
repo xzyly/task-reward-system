@@ -14,7 +14,20 @@ app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 // 引入任务路由
 const tasksRouter = require('./routes/tasks');
-app.use('/api', tasksRouter);
+
+const usersRouter = require('./routes/user');
+
+const { authenticate } = require('./middlewares/auth');
+
+const setupSwagger = require('./swagger');
+
+setupSwagger(app);
+
+//保护用户路由
+app.use('/api',usersRouter);
+
+//保护任务路由
+app.use('/api',authenticate,tasksRouter)
 
 // 默认路由，返回前端页面
 app.get('/', (req, res) => {

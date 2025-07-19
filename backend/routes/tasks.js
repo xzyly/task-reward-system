@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { authenticate } = require('../middlewares/auth');
 
 /**
  * @swagger
  * tags:
- *  name:任务
+ *  name: 任务
  *  description: 任务管理
  */
 
@@ -64,14 +65,15 @@ const db = require('../db');
  *         description: 服务器错误
  */
 
+
 // 获取所有任务列表
 router.get('/tasks', (req, res) => {
-  db.all('SELECT * FROM task', [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+  try {
+    const rows = db.prepare('SELECT * FROM task').all();
     res.json(rows);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -101,20 +103,18 @@ router.get('/tasks', (req, res) => {
  *         description: 服务器错误
  */
 
-module.exports = router;
-
 // 获取单个任务详情
 router.get('/tasks/:id', (req, res) => {
+  try {
     const id = req.params.id;
-    db.get('SELECT * FROM task WHERE id = ?', [id], (err, row) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      if (!row) {
-        return res.status(404).json({ error: 'Task not found' });
-      }
-      res.json(row);
-    });
+    const row = db.prepare('SELECT * FROM task WHERE id = ?').get(id);
+    if (!row) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json(row);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -153,34 +153,42 @@ router.get('/tasks/:id', (req, res) => {
 
 router.post('/tasks/:id/accept', (req, res) => {
   const taskId = req.params.id;
-  const takerId = req.body.taker_id; // 后续用 JWT 获取
+  const takerId = req.body.taker_id || req.userId; // 临时兼容，优先从JWT获取
 
-  db.serialize(() => {
-    db.get('SELECT * FROM task WHERE id = ?', [taskId], (err, task) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (!task) return res.status(404).json({ error: 'Task not found' });
-      if (task.status !== 'OPEN') return res.status(400).json({ error: 'Task already taken' });
+  try {
+    // 开始事务
+    const transaction = db.transaction(() => {
+      const task = db.prepare('SELECT * FROM task WHERE id = ?').get(taskId);
+      if (!task) {
+        throw new Error('Task not found');
+      }
+      if (task.status !== 'OPEN') {
+        throw new Error('Task already taken');
+      }
 
-      // 行级事务，防止并发抢单
-      db.run('BEGIN TRANSACTION');
-      db.run(
-        'UPDATE task SET taker_id = ?, status = ? WHERE id = ? AND status = ?',
-        [takerId, 'TAKEN', taskId, 'OPEN'],
-        function (err) {
-          if (err) {
-            db.run('ROLLBACK');
-            return res.status(500).json({ error: err.message });
-          }
-          if (this.changes === 0) {
-            db.run('ROLLBACK');
-            return res.status(400).json({ error: 'Task already taken by others' });
-          }
-          db.run('COMMIT');
-          res.json({ message: 'Task accepted successfully' });
-        }
-      );
+      // 更新任务状态，防止并发抢单
+      const updateResult = db.prepare(
+        'UPDATE task SET taker_id = ?, status = ? WHERE id = ? AND status = ?'
+      ).run(takerId, 'TAKEN', taskId, 'OPEN');
+
+      if (updateResult.changes === 0) {
+        throw new Error('Task already taken by others');
+      }
+      
+      return { message: 'Task accepted successfully' };
     });
-  });
+
+    const result = transaction();
+    res.json(result);
+  } catch (err) {
+    if (err.message === 'Task not found') {
+      res.status(404).json({ error: err.message });
+    } else if (err.message.includes('already taken')) {
+      res.status(400).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
 });
 
 /**
@@ -215,25 +223,27 @@ router.post('/tasks/:id/accept', (req, res) => {
  *         description: 服务器错误
  */
 
-router.post('/tasks/:id/finish', (req, res) => {
+router.post('/tasks/:id/finish', authenticate, (req, res) => {
   const taskId = req.params.id;
-  const takerId = req.userId; // 后续用 JWT 获取// 已获取用户 ID
+  const takerId = req.userId; // 从JWT获取
 
-  db.get('SELECT * FROM task WHERE id = ?', [taskId], (err, task) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!task) return res.status(404).json({ error: 'Task not found' });
-    if (task.status !== 'TAKEN') return res.status(400).json({ error: 'Task not in TAKEN status' });
-    if (task.taker_id !== takerId) return res.status(403).json({ error: 'Only taker can finish the task' });
+  try {
+    const task = db.prepare('SELECT * FROM task WHERE id = ?').get(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    if (task.status !== 'TAKEN') {
+      return res.status(400).json({ error: 'Task not in TAKEN status' });
+    }
+    if (task.taker_id !== takerId) {
+      return res.status(403).json({ error: 'Only taker can finish the task' });
+    }
 
-    db.run(
-      'UPDATE task SET status = ? WHERE id = ?',
-      ['COMPLETED', taskId],
-      function (err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: 'Task finished successfully' });
-      }
-    );
-  });
+    db.prepare('UPDATE task SET status = ? WHERE id = ?').run('COMPLETED', taskId);
+    res.json({ message: 'Task finished successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -267,7 +277,7 @@ router.post('/tasks/:id/finish', (req, res) => {
  */
 
 // 获取我接的任务
-router.get('/tasks/my/:takerId', (req, res) => {
+router.get('/tasks/my/:takerId', authenticate, (req, res) => {
   const takerId = req.params.takerId;
   
   // 参数校验
@@ -275,20 +285,19 @@ router.get('/tasks/my/:takerId', (req, res) => {
     return res.status(400).json({ error: 'Invalid taker_id parameter' });
   }
 
-  db.all(
-    'SELECT * FROM task WHERE taker_id = ? ORDER BY created_at DESC', 
-    [takerId], 
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      res.json({
-        message: 'My tasks retrieved successfully',
-        count: rows.length,
-        tasks: rows
-      });
-    }
-  );
+  try {
+    const rows = db.prepare(
+      'SELECT * FROM task WHERE taker_id = ? ORDER BY created_at DESC'
+    ).all(takerId);
+    
+    res.json({
+      message: 'My tasks retrieved successfully',
+      count: rows.length,
+      tasks: rows
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /**
@@ -340,13 +349,14 @@ router.get('/tasks/my/:takerId', (req, res) => {
  */
 
 // 发布新任务
-router.post('/tasks', (req, res) => {
-  const { title, description, reward, min_level, publisher_id } = req.body;
+router.post('/tasks', authenticate, (req, res) => {
+  const { title, description, reward, min_level } = req.body;
+  const publisher_id = req.userId; // 从JWT获取发布者ID
 
   // 参数校验
-  if (!title || !description || !reward || !publisher_id) {
+  if (!title || !description || !reward) {
     return res.status(400).json({ 
-      error: 'Missing required fields: title, description, reward, publisher_id' 
+      error: 'Missing required fields: title, description, reward' 
     });
   }
 
@@ -354,34 +364,25 @@ router.post('/tasks', (req, res) => {
     return res.status(400).json({ error: 'Reward must be a positive number' });
   }
 
-  if (isNaN(publisher_id) || publisher_id <= 0) {
-    return res.status(400).json({ error: 'Invalid publisher_id' });
-  }
-
   // 设置默认值
   const minLevel = min_level || 1;
 
-  db.run(
-    `INSERT INTO task (title, description, reward, min_level, status, publisher_id) 
-     VALUES (?, ?, ?, ?, 'OPEN', ?)`,
-    [title, description, reward, minLevel, publisher_id],
-    function (err) {
-      if (err) {
-        return res.status(500).json({ error: err.message });
-      }
-      
-      // 返回新创建的任务信息
-      db.get('SELECT * FROM task WHERE id = ?', [this.lastID], (err, row) => {
-        if (err) {
-          return res.status(500).json({ error: err.message });
-        }
-        res.status(201).json({
-          message: 'Task created successfully',
-          task: row
-        });
-      });
-    }
-  );
+  try {
+    const insertResult = db.prepare(
+      `INSERT INTO task (title, description, reward, min_level, status, publisher_id) 
+       VALUES (?, ?, ?, ?, 'OPEN', ?)`
+    ).run(title, description, reward, minLevel, publisher_id);
+    
+    // 返回新创建的任务信息
+    const newTask = db.prepare('SELECT * FROM task WHERE id = ?').get(insertResult.lastInsertRowid);
+    
+    res.status(201).json({
+      message: 'Task created successfully',
+      task: newTask
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

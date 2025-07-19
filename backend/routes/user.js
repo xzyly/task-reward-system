@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const db = require('../db');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 /**
  * @swagger
@@ -45,7 +45,6 @@ const jwt = require('jsonwebtoken')
  *           description: 用户名
  */
 
-
 /**
  * @swagger
  * /register:
@@ -81,48 +80,36 @@ const jwt = require('jsonwebtoken')
  *         description: 服务器错误
  */
 
-//用户注册
+// 用户注册
 router.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        //验证输入
+        // 验证输入
         if (!username || !password) {
             return res.status(400).json({
                 error: '用户名和密码不能为空'
             });
         }
 
-        //检查用户名是否已存在
-        const userExists = await new Promise((resolve, reject) => {
-            db.get('SELECT id FROM user WHERE username = ?', [username], (err, row) => {
-                if (err) reject(err);
-                resolve(!!row);
-            });
-        });
-        if (userExists) {
+        // 检查用户名是否已存在
+        const existingUser = db.prepare('SELECT id FROM user WHERE username = ?').get(username);
+        if (existingUser) {
             return res.status(400).json({
                 error: '用户名已存在'
             });
         }
 
-        //哈希密码
+        // 哈希密码
         const saltRounds = 10;
         const passwordHash = await bcrypt.hash(password, saltRounds);
 
-        //创建用户
-        const result = await new Promise((resolve, reject) => {
-            db.run(
-                'INSERT INTO user (username,password_hash) VALUES (?,?)',
-                [username, passwordHash],
-                function (err) {
-                    if (err) reject(err);
-                    resolve(this);
-                }
-            );
-        });
+        // 创建用户
+        const result = db.prepare(
+            'INSERT INTO user (username, password_hash) VALUES (?, ?)'
+        ).run(username, passwordHash);
 
-        res.status(201).json({ id: result.lastID, username });
+        res.status(201).json({ id: result.lastInsertRowid, username });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -163,35 +150,30 @@ router.post('/register', async (req, res) => {
  *         description: 服务器错误
  */
 
-//用户登录
+// 用户登录
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        //查找用户 
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM user WHERE username = ?', [username], (err, row) => {
-                if (err) reject(err);
-                resolve(row);
-            });
-        });
+        // 查找用户 
+        const user = db.prepare('SELECT * FROM user WHERE username = ?').get(username);
 
         if (!user) {
             return res.status(401).json({ error: '用户名或密码错误' });
-        };
+        }
 
-        //验证密码
+        // 验证密码
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
         if (!passwordMatch) {
             return res.status(401).json({ error: '用户名或密码错误' });
         }
 
-        //生成JWT令牌
+        // 生成JWT令牌
         const token = jwt.sign(
             { userId: user.id, username: user.username },
             process.env.JWT_SECRET || 'your-secret-key',
             { expiresIn: '24h' }
-        )
+        );
 
         res.json({ token, userId: user.id, username: user.username });
     } catch (err) {

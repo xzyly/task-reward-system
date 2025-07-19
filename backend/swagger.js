@@ -1,5 +1,6 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 
 const options = {
     definition: {
@@ -22,7 +23,7 @@ const options = {
             bearerAuth:[]
         }]
     },
-    apis:['./routes/*.js'],//指定包含注释的文件路径
+    apis:[path.join(__dirname, 'routes', '*.js')], // 使用绝对路径
 };
 
 const swaggerSpec = swaggerJSDoc(options);

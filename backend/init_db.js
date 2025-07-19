@@ -1,7 +1,8 @@
 const db = require('./db');
 
-db.serialize(() => {
-  db.run(`
+try {
+  // 创建用户表
+  db.exec(`
     CREATE TABLE IF NOT EXISTS user (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE NOT NULL,
@@ -11,8 +12,8 @@ db.serialize(() => {
     )
   `);
 
-  // 创建 task 表
-  db.run(`
+  // 创建任务表
+  db.exec(`
     CREATE TABLE IF NOT EXISTS task (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -29,5 +30,8 @@ db.serialize(() => {
   `);
 
   console.log('数据库初始化完成');
+} catch (err) {
+  console.error('数据库初始化失败:', err);
+} finally {
   db.close();
-});
+}

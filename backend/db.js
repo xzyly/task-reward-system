@@ -1,7 +1,7 @@
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const path = require('path');
 
 const dbPath = path.join(__dirname, '..', 'db.sqlite');
-const db = new sqlite3.Database(dbPath);
+const db = new Database(dbPath);
 
 module.exports = db;

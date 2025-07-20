@@ -654,10 +654,8 @@
 
         // 查看任务详情
         function viewTaskDetail(taskId) {
-            // 这里应该跳转到任务详情页面
-            console.log('查看任务详情:', taskId);
-            // location.href = `taskDetail.html?id=${taskId}`;
-            alert(`查看任务 ${taskId} 的详情（待实现详情页面）`);
+            // 跳转到任务详情页面
+            window.location.href = `detail.html?id=${taskId}`;
         }
 
         // 接单功能

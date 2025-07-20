@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务详情 - 任务悬赏平台</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%);
+            color: #f0f6fc;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-back {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #58a6ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .nav-back:hover {
+            background: rgba(88, 166, 255, 0.1);
+            color: #79c0ff;
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+        }
+
+        .task-header {
+            background: rgba(240, 246, 252, 0.02);
+            border: 1px solid rgba(240, 246, 252, 0.08);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .task-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .status-open {
+            background: rgba(46, 160, 67, 0.15);
+            color: #3fb950;
+            border: 1px solid rgba(46, 160, 67, 0.2);
+        }
+
+        .status-taken {
+            background: rgba(219, 154, 4, 0.15);
+            color: #e3b341;
+            border: 1px solid rgba(219, 154, 4, 0.2);
+        }
+
+        .status-completed {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.2);
+        }
+
+        .task-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f0f6fc;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .task-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            color: #1a1a1a;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .task-main {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .task-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-card {
+            background: rgba(240, 246, 252, 0.02);
+            border: 1px solid rgba(240, 246, 252, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f0f6fc;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-description {
+            color: #e6edf3;
+            line-height: 1.7;
+            font-size: 1rem;
+            white-space: pre-wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(240, 246, 252, 0.06);
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            color: #8b949e;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-value {
+            color: #f0f6fc;
+            font-weight: 500;
+        }
+
+        .level-badge {
+            background: linear-gradient(135deg, #58a6ff, #79c0ff);
+            color: #0d1117;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .action-section {
+            background: rgba(240, 246, 252, 0.02);
+            border: 1px solid rgba(240, 246, 252, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #238636, #2ea043);
+            color: white;
+            box-shadow: 0 4px 16px rgba(35, 134, 54, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2ea043, #3fb950);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(35, 134, 54, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(240, 246, 252, 0.1);
+            color: #f0f6fc;
+            border: 1px solid rgba(240, 246, 252, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(240, 246, 252, 0.15);
+            border-color: rgba(240, 246, 252, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #da3633, #f85149);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f85149, #ff6b6b);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: rgba(240, 246, 252, 0.05);
+            color: #6e7681;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b949e;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(240, 246, 252, 0.1);
+            border-radius: 50%;
+            border-top-color: #58a6ff;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error States */
+        .error-message {
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            color: #f85149;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .task-header {
+                padding: 24px;
+            }
+
+            .task-title {
+                font-size: 2rem;
+            }
+
+            .task-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(35, 134, 54, 0.9);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: rgba(248, 81, 73, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="taskList.html" class="nav-back">
+                    <i class="fas fa-arrow-left"></i>
+                    返回任务列表
+                </a>
+                <div class="nav-title">任务详情</div>
+                <div class="nav-actions">
+                    <!-- Additional actions can be added here -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>正在加载任务详情...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text">加载失败，请稍后重试</span>
+            </div>
+
+            <!-- Task Content -->
+            <div id="task-content" style="display: none;">
+                <!-- Task Header -->
+                <div class="task-header">
+                    <div class="task-status-badge" id="task-status">
+                        <i class="fas fa-circle"></i>
+                        <span>开放中</span>
+                    </div>
+                    <h1 class="task-title" id="task-title">任务标题</h1>
+                    <div class="task-reward" id="task-reward">
+                        <i class="fas fa-coins"></i>
+                        <span>¥0</span>
+                    </div>
+                </div>
+
+                <!-- Task Grid -->
+                <div class="task-grid">
+                    <!-- Main Content -->
+                    <div class="task-main">
+                        <!-- Description -->
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-file-alt"></i>
+                                任务描述
+                            </h2>
+                            <div class="task-description" id="task-description">
+                                任务描述内容...
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="action-section">
+                            <h2 class="section-title">
+                                <i class="fas fa-cog"></i>
+                                操作
+                            </h2>
+                            <div class="action-buttons" id="action-buttons">
+                                <!-- Buttons will be dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="task-sidebar">
+                        <!-- Task Info -->
+                        <div class="section-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                任务信息
+                            </h2>
+                            <div class="meta-item">
+                                <div class="meta-label">
+                                    <i class="fas fa-star"></i>
+                                    最低等级
+                                </div>
+                                <div class="meta-value">
+                                    <span class="level-badge" id="task-level">等级 1</span>
+                                </div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">
+                                    <i class="fas fa-user"></i>
+                                    发布者
+                                </div>
+                                <div class="meta-value" id="task-publisher">用户</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">
+                                    <i class="fas fa-clock"></i>
+                                    发布时间
+                                </div>
+                                <div class="meta-value" id="task-created">刚刚</div>
+                            </div>
+                            <div class="meta-item" id="taker-info" style="display: none;">
+                                <div class="meta-label">
+                                    <i class="fas fa-user-check"></i>
+                                    接单者
+                                </div>
+                                <div class="meta-value" id="task-taker">用户</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toast-message">消息</span>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // 显示Toast通知
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 格式化时间
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}天前`;
+            if (hours > 0) return `${hours}小时前`;
+            if (minutes > 0) return `${minutes}分钟前`;
+            return '刚刚';
+        }
+
+        // 获取状态配置
+        function getStatusConfig(status) {
+            const configs = {
+                'OPEN': {
+                    class: 'status-open',
+                    icon: 'fa-circle',
+                    text: '开放中'
+                },
+                'TAKEN': {
+                    class: 'status-taken',
+                    icon: 'fa-clock',
+                    text: '进行中'
+                },
+                'COMPLETED': {
+                    class: 'status-completed',
+                    icon: 'fa-check-circle',
+                    text: '已完成'
+                }
+            };
+            return configs[status] || configs['OPEN'];
+        }
+
+        // 生成操作按钮
+        function generateActionButtons(task) {
+            const currentUserId = localStorage.getItem('userId');
+            const isLoggedIn = !!currentUserId;
+            const isPublisher = task.publisher_id == currentUserId;
+            const isTaker = task.taker_id == currentUserId;
+            
+            let buttons = [];
+            
+            if (!isLoggedIn) {
+                buttons.push(`
+                    <button class="btn btn-primary" onclick="window.location.href='login.html'">
+                        <i class="fas fa-sign-in-alt"></i>
+                        登录后接单
+                    </button>
+                `);
+            } else if (task.status === 'OPEN' && !isPublisher) {
+                buttons.push(`
+                    <button class="btn btn-primary" onclick="acceptTask(${task.id})">
+                        <i class="fas fa-handshake"></i>
+                        接受任务
+                    </button>
+                `);
+            } else if (task.status === 'TAKEN' && isTaker) {
+                buttons.push(`
+                    <button class="btn btn-primary" onclick="finishTask(${task.id})">
+                        <i class="fas fa-check"></i>
+                        完成任务
+                    </button>
+                `);
+            }
+            
+            if (isPublisher && task.status === 'OPEN') {
+                buttons.push(`
+                    <button class="btn btn-danger" onclick="cancelTask(${task.id})">
+                        <i class="fas fa-times"></i>
+                        取消任务
+                    </button>
+                `);
+            }
+            
+            buttons.push(`
+                <button class="btn btn-secondary" onclick="window.location.href='taskList.html'">
+                    <i class="fas fa-list"></i>
+                    返回列表
+                </button>
+            `);
+            
+            return buttons.join('');
+        }
+
+        // 加载任务详情
+        async function loadTaskDetail() {
+            const taskId = getUrlParameter('id');
+            
+            if (!taskId) {
+                showError('无效的任务ID');
+                return;
+            }
+            
+            try {
+                console.log('正在请求任务详情，ID:', taskId);
+                const response = await fetch(`/api/tasks/${taskId}`);
+                
+                console.log('响应状态:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API错误响应:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText || '任务不存在或已被删除'}`);
+                }
+                
+                const task = await response.json();
+                console.log('获取到的任务数据:', task);
+                displayTaskDetail(task);
+                
+            } catch (error) {
+                console.error('Error loading task:', error);
+                
+                // 根据错误类型提供更具体的错误信息
+                let errorMessage = '加载任务详情失败';
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = '无法连接到服务器，请确保后端服务正在运行';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                showError(errorMessage);
+            }
+        }
+
+        // 显示任务详情
+        function displayTaskDetail(task) {
+            const statusConfig = getStatusConfig(task.status);
+            
+            // 更新状态标签
+            const statusBadge = document.getElementById('task-status');
+            statusBadge.className = `task-status-badge ${statusConfig.class}`;
+            statusBadge.innerHTML = `
+                <i class="fas ${statusConfig.icon}"></i>
+                <span>${statusConfig.text}</span>
+            `;
+            
+            // 更新基本信息
+            document.getElementById('task-title').textContent = task.title;
+            document.getElementById('task-reward').innerHTML = `
+                <i class="fas fa-coins"></i>
+                <span>¥${task.reward}</span>
+            `;
+            document.getElementById('task-description').textContent = task.description;
+            
+            // 更新元信息
+            document.getElementById('task-level').textContent = `等级 ${task.min_level || 1}`;
+            document.getElementById('task-publisher').textContent = `用户 ${task.publisher_id}`;
+            document.getElementById('task-created').textContent = formatTime(task.created_at);
+            
+            // 显示接单者信息（如果有）
+            if (task.taker_id) {
+                document.getElementById('taker-info').style.display = 'flex';
+                document.getElementById('task-taker').textContent = `用户 ${task.taker_id}`;
+            }
+            
+            // 生成操作按钮
+            document.getElementById('action-buttons').innerHTML = generateActionButtons(task);
+            
+            // 隐藏加载状态，显示内容
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('task-content').style.display = 'block';
+        }
+
+        // 显示错误
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error').style.display = 'block';
+        }
+
+        // 接受任务
+        async function acceptTask(taskId) {
+            const currentUserId = localStorage.getItem('userId');
+            
+            if (!currentUserId) {
+                showToast('请先登录', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/tasks/${taskId}/accept`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        taker_id: parseInt(currentUserId)
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '接单失败');
+                }
+                
+                showToast('接单成功！');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error accepting task:', error);
+                showToast(error.message || '接单失败', 'error');
+            }
+        }
+
+        // 完成任务
+        async function finishTask(taskId) {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                showToast('请先登录', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/tasks/${taskId}/finish`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '完成任务失败');
+                }
+                
+                showToast('任务完成！');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error finishing task:', error);
+                showToast(error.message || '完成任务失败', 'error');
+            }
+        }
+
+        // 取消任务（这个API需要后端实现）
+        async function cancelTask(taskId) {
+            if (!confirm('确定要取消这个任务吗？')) {
+                return;
+            }
+            
+            showToast('取消任务功能待实现', 'error');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTaskDetail();
+        });
+    </script>
+</body>
+</html>

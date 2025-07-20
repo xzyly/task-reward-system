@@ -8,13 +8,14 @@ describe('任务系统', () => {
 
   beforeAll(async () => {
     // 注册测试用户并获取token
+    const username = `oldtaskuser_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     await request(app)
       .post('/api/register')
-      .send({ username: 'taskuser', password: 'taskpass' });
+      .send({ username, password: 'taskpass' });
     
     const loginRes = await request(app)
       .post('/api/login')
-      .send({ username: 'taskuser', password: 'taskpass' });
+      .send({ username, password: 'taskpass' });
     
     authToken = loginRes.body.token;
     userId = loginRes.body.userId;
@@ -31,8 +32,9 @@ describe('任务系统', () => {
       });
     
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty('id');
-    expect(res.body.title).toBe('测试任务');
+    expect(res.body).toHaveProperty('task');
+    expect(res.body.task).toHaveProperty('id');
+    expect(res.body.task.title).toBe('测试任务');
   });
 
   it('应该拒绝未认证用户创建任务', async () => {

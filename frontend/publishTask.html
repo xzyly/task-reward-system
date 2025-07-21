@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布新任务 - 任务悬赏平台</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #00b894;
+            --danger: #ff7675;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 用户控制区域 */
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--light);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 导航按钮 */
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+
+        /* 表单样式 */
+        .task-form {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b8c6db;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon span {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b8c6db;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00cec9);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* 表单操作按钮 */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        
+            .user-controls {
+                justify-content: center;
+            }
+        
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-plus-circle"></i> 发布新任务</h1>
+            <div class="user-controls">
+                <span id="usernameDisplay"></span>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> 退出
+                </button>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button id="backBtn" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> 返回
+            </button>
+        </div>
+
+        <div class="task-form">
+            <div class="form-group">
+                <label for="taskTitle"><i class="fas fa-heading"></i> 任务标题</label>
+                <input type="text" id="taskTitle" placeholder="请输入任务标题(5-50字)" required>
+            </div>
+
+            <div class="form-group">
+                <label for="taskDescription"><i class="fas fa-align-left"></i> 任务描述</label>
+                <textarea id="taskDescription" placeholder="请详细描述任务要求、验收标准等信息(20-500字)" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="taskCategory"><i class="fas fa-tag"></i> 任务分类</label>
+                    <select id="taskCategory">
+                        <option value="design">设计</option>
+                        <option value="development">开发</option>
+                        <option value="writing">写作</option>
+                        <option value="translation">翻译</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDeadline"><i class="fas fa-calendar-alt"></i> 截止日期</label>
+                    <input type="date" id="taskDeadline" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="taskReward"><i class="fas fa-coins"></i> 悬赏金额</label>
+                    <div class="input-with-icon">
+                        <input type="number" id="taskReward" placeholder="0.00" min="0" step="0.01" required>
+                        <span>元</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskLevel"><i class="fas fa-star"></i> 最低等级</label>
+                    <select id="taskLevel">
+                        <option value="1">Lv.1 新手</option>
+                        <option value="2">Lv.2 初级</option>
+                        <option value="3" selected>Lv.3 中级</option>
+                        <option value="4">Lv.4 高级</option>
+                        <option value="5">Lv.5 专家</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button id="cancelBtn" class="btn btn-danger">
+                    <i class="fas fa-times"></i> 取消
+                </button>
+                <button id="submitBtn" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i> 发布任务
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { taskAPI } from '/js/api.js';
+        import { logout } from '/js/auth.js';
+
+        // DOM加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查登录状态
+            if (!localStorage.getItem('token')) {
+                window.location.href = '/auth.html';
+                return;
+            }
+
+            // 显示用户名
+            const username = localStorage.getItem('username');
+            if (username) {
+                document.getElementById('usernameDisplay').textContent = username;
+            }
+
+            // 设置默认截止日期为3天后
+            const today = new Date();
+            const threeDaysLater = new Date(today);
+            threeDaysLater.setDate(today.getDate() + 3);
+            document.getElementById('taskDeadline').valueAsDate = threeDaysLater;
+
+            // 绑定事件
+            document.getElementById('backBtn').addEventListener('click', () => {
+                window.location.href = '/taskList.html';
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                if (confirm('确定要取消发布吗？所有输入的内容将丢失。')) {
+                    window.location.href = '/taskList.html';
+                }
+            });
+
+            document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+        });
+
+        /**
+         * 处理表单提交
+         */
+        async function handleSubmit() {
+            const taskData = {
+                title: document.getElementById('taskTitle').value.trim(),
+                description: document.getElementById('taskDescription').value.trim(),
+                reward: parseFloat(document.getElementById('taskReward').value),
+                min_level: parseInt(document.getElementById('taskLevel').value),
+                category: document.getElementById('taskCategory').value,
+                deadline: document.getElementById('taskDeadline').value
+            };
+
+            // 验证表单
+            if (!validateTask(taskData)) return;
+
+            try {
+                const result = await taskAPI.createTask(taskData);
+                alert('任务发布成功！');
+                window.location.href = '/taskList.html';
+            } catch (error) {
+                alert(error.message || '发布任务失败');
+            }
+        }
+
+        /**
+         * 验证任务数据
+         */
+        function validateTask(task) {
+            if (!task.title || task.title.length < 5 || task.title.length > 50) {
+                alert('任务标题需为5-50个字符');
+                return false;
+            }
+
+            if (!task.description || task.description.length < 20 || task.description.length > 500) {
+                alert('任务描述需为20-500个字符');
+                return false;
+            }
+
+            if (isNaN(task.reward)) {
+                alert('请输入有效的悬赏金额');
+                return false;
+            }
+
+            if (task.reward <= 0) {
+                alert('悬赏金额必须大于0');
+                return false;
+            }
+
+            if (!task.deadline) {
+                alert('请选择截止日期');
+                return false;
+            }
+
+            const deadlineDate = new Date(task.deadline);
+            if (deadlineDate < new Date()) {
+                alert('截止日期不能早于今天');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 
 const authenticate = (req,res,next) => {
-    const token = req.header('Authorization')?.replace('Bearer','');
+    const token = req.header('Authorization')?.replace('Bearer ','');
     if(!token) return res.status(401).json({error:'请提供认证令牌'});
     
     try{
@@ -19,12 +19,7 @@ module.exports = {authenticate};
 
 
 
-
-
-
-
-
-
+ 
 
 
 

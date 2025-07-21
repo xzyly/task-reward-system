@@ -6,7 +6,7 @@ describe('认证系统', () => {
   beforeAll(async () => {
     // 初始化测试数据库
     await new Promise((resolve) => {
-      db.run('DELETE FROM user', [], () => resolve());
+      db.prepare(sql).run(params);
     });
   });
 
@@ -41,58 +41,4 @@ describe('认证系统', () => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 

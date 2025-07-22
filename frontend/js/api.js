@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 
 
@@ -102,7 +102,7 @@ export const taskAPI = {
 
     createTask: (taskData) => makeRequest('/tasks', 'POST', taskData),
 
-    acceptTask: (taskId) => makeRequest(`/tasks/${taskId}/accept`, 'POST'),
+    acceptTask: (taskId, takerId) => makeRequest(`/tasks/${taskId}/accept`, 'POST', { taker_id: takerId }),
 
     finishTask: (taskId) => makeRequest(`/tasks/${taskId}/finish`, 'POST'),
 

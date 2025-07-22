@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人中心 - 任务悬赏平台</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -459,8 +460,8 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="nav-bar">
+    <!-- 导航栏将通过JavaScript动态加载 -->
+    <!-- Original navigation will be replaced by dynamic navbar -->
         <div class="container">
             <div class="nav-content">
                 <a href="taskList.html" class="nav-brand">TaskReward</a>
@@ -709,22 +710,50 @@
         });
 
         function checkAuth() {
-            const token = localStorage.getItem('authToken');
+            // 兼容多种token存储方式
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
             const userData = localStorage.getItem('userData');
+            const username = localStorage.getItem('username');
+            const userId = localStorage.getItem('userId');
             
-            if (!token || !userData) {
+            // 检查是否有token
+            if (!token) {
+                console.log('未找到token，显示登录模态框');
                 showLoginModal();
                 return;
             }
 
-            try {
-                currentUser = JSON.parse(userData);
-                updateProfileInfo();
-                loadMyTasks();
-            } catch (e) {
-                console.error('Error parsing user data:', e);
-                showLoginModal();
+            // 尝试获取用户信息
+            let userInfo = null;
+            
+            if (userData) {
+                try {
+                    userInfo = JSON.parse(userData);
+                } catch (e) {
+                    console.warn('解析userData失败:', e);
+                }
             }
+            
+            // 如果没有完整的用户数据，尝试从其他字段构建
+            if (!userInfo && username) {
+                userInfo = {
+                    username: username,
+                    userId: userId ? parseInt(userId) : 1
+                };
+                console.log('从username构建用户信息:', userInfo);
+            }
+            
+            if (!userInfo) {
+                console.log('未找到用户信息，显示登录模态框');
+                showLoginModal();
+                return;
+            }
+
+            // 设置当前用户并更新界面
+            currentUser = userInfo;
+            console.log('用户验证成功:', currentUser);
+            updateProfileInfo();
+            loadMyTasks();
         }
 
         function showLoginModal() {
@@ -766,26 +795,38 @@
                 const data = await response.json();
                 
                 if (response.ok) {
+                    // 保存认证信息 - 使用统一的存储方式
                     localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('token', data.token); // 兼容性
                     localStorage.setItem('userData', JSON.stringify({
                         userId: data.userId,
                         username: data.username
                     }));
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('userId', data.userId);
                     
                     currentUser = {
                         userId: data.userId,
                         username: data.username
                     };
                     
+                    console.log('登录成功，保存的信息:', {
+                        token: data.token,
+                        user: currentUser
+                    });
+                    
                     closeLoginModal();
                     updateProfileInfo();
                     loadMyTasks();
+                    
+                    // 显示成功消息
+                    showToast('登录成功！', 'success');
                 } else {
-                    alert(data.error || '登录失败');
+                    showToast(data.error || '登录失败', 'error');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('登录失败，请检查网络连接');
+                showToast('登录失败，请检查网络连接', 'error');
             }
         });
 
@@ -810,14 +851,14 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    alert('注册成功！请登录');
+                    showToast('注册成功！请登录', 'success');
                     showLoginForm();
                 } else {
-                    alert(data.error || '注册失败');
+                    showToast(data.error || '注册失败', 'error');
                 }
             } catch (error) {
                 console.error('Register error:', error);
-                alert('注册失败，请检查网络连接');
+                showToast('注册失败，请检查网络连接', 'error');
             }
         });
 
@@ -829,32 +870,85 @@
         }
 
         async function loadMyTasks() {
-            if (!currentUser) return;
+            if (!currentUser) {
+                console.warn('loadMyTasks: currentUser 为空');
+                return;
+            }
             
-            const token = localStorage.getItem('authToken');
+            // 兼容多种token存储方式
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
             const container = document.getElementById('myTasksList');
             
+            console.log('加载我的任务 - 用户信息:', currentUser);
+            console.log('加载我的任务 - Token:', token ? '已获取' : '未找到');
+            
+            if (!token) {
+                console.error('未找到token，显示登录提示');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <h3>需要登录</h3>
+                        <p>请先登录以查看您的任务。</p>
+                        <button class="btn btn-primary" onclick="showLoginModal()" style="margin-top: 16px;">
+                            <i class="fas fa-sign-in-alt"></i> 立即登录
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
             try {
-                const response = await fetch(`${API_BASE}/tasks/my/${currentUser.userId}`, {
+                const apiUrl = `${API_BASE}/tasks/my/${currentUser.userId}`;
+                console.log('请求URL:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
+                console.log('API响应状态:', response.status);
+
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('获取到的任务数据:', data);
                     displayTasks(data.tasks || [], container);
                     updateStats(data.tasks || []);
                 } else {
-                    throw new Error('Failed to fetch tasks');
+                    const errorText = await response.text();
+                    console.error('API错误响应:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText || '获取任务失败'}`);
                 }
             } catch (error) {
                 console.error('Error loading tasks:', error);
+                
+                let errorMessage = '无法加载任务列表';
+                if (error.message.includes('401')) {
+                    errorMessage = '登录已过期，请重新登录';
+                } else if (error.message.includes('403')) {
+                    errorMessage = '没有权限访问任务列表';
+                } else if (error.message.includes('404')) {
+                    errorMessage = '未找到任务数据';
+                } else if (error.message.includes('fetch')) {
+                    errorMessage = '无法连接到服务器，请检查网络';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h3>加载失败</h3>
-                        <p>无法加载任务列表，请刷新页面重试。</p>
+                        <p>${errorMessage}</p>
+                        <div style="margin-top: 16px;">
+                            <button class="btn btn-primary" onclick="loadMyTasks()" style="margin-right: 8px;">
+                                <i class="fas fa-redo"></i> 重新加载
+                            </button>
+                            <button class="btn btn-secondary" onclick="showLoginModal()">
+                                <i class="fas fa-sign-in-alt"></i> 重新登录
+                            </button>
+                        </div>
                     </div>
                 `;
             }
@@ -957,26 +1051,36 @@
         }
 
         async function finishTask(taskId) {
-            const token = localStorage.getItem('authToken');
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+            
+            if (!token) {
+                showToast('请先登录', 'error');
+                showLoginModal();
+                return;
+            }
             
             try {
+                console.log('完成任务:', taskId);
                 const response = await fetch(`${API_BASE}/tasks/${taskId}/finish`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
                 if (response.ok) {
-                    alert('任务已完成！');
+                    showToast('任务已完成！', 'success');
                     loadMyTasks();
                 } else {
-                    const data = await response.json();
-                    alert(data.error || '完成任务失败');
+                    const data = await response.json().catch(() => ({}));
+                    const errorMsg = data.error || `完成任务失败: HTTP ${response.status}`;
+                    console.error('完成任务失败:', response.status, data);
+                    showToast(errorMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error finishing task:', error);
-                alert('完成任务失败，请重试');
+                showToast('完成任务失败，请重试', 'error');
             }
         }
 
@@ -1024,8 +1128,121 @@
 
         function logout() {
             localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
             localStorage.removeItem('userData');
+            localStorage.removeItem('username');
+            localStorage.removeItem('userId');
             window.location.href = 'taskList.html';
+        }
+
+        // 确保函数可以被全局访问
+        window.loadMyTasks = loadMyTasks;
+        window.finishTask = finishTask;
+
+        // 消息提示函数
+        function showToast(message, type = 'success') {
+            // 创建toast元素
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 10000;
+                background: ${type === 'error' ? '#da3633' : '#2ea043'};
+                color: white; padding: 15px 20px; border-radius: 8px;
+                font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideInToast 0.3s ease-out;
+                max-width: 300px; word-wrap: break-word;
+            `;
+            toast.textContent = message;
+            
+            // 添加动画样式
+            if (!document.getElementById('toast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'toast-styles';
+                style.textContent = `
+                    @keyframes slideInToast {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(toast);
+            
+            // 3秒后移除
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 3000);
+        }
+
+        // 消息提示函数
+        function showToast(message, type = 'info', duration = 3000) {
+            // 移除已存在的提示
+            const existingToast = document.querySelector('.toast-message');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // 创建新的提示
+            const toast = document.createElement('div');
+            toast.className = `toast-message toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            
+            // 设置背景色
+            const colors = {
+                success: '#00b894',
+                error: '#ff7675',
+                warning: '#fdcb6e',
+                info: '#74b9ff'
+            };
+            toast.style.backgroundColor = colors[type] || colors.info;
+            
+            // 设置内容
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-triangle',
+                warning: 'exclamation-circle',
+                info: 'info-circle'
+            };
+            toast.innerHTML = `<i class="fas fa-${icons[type] || icons.info}"></i> ${message}`;
+            
+            // 添加到页面
+            document.body.appendChild(toast);
+            
+            // 自动移除
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // 添加CSS动画
+        if (!document.querySelector('#toast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'toast-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
         }
     </script>
 </body>

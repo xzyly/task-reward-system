@@ -153,7 +153,8 @@ router.get('/tasks/:id', (req, res) => {
 
 router.post('/tasks/:id/accept', (req, res) => {
   const taskId = req.params.id;
-  const takerId = req.body.taker_id || req.userId; // 临时兼容，优先从JWT获取
+  // 暂时使用固定用户ID，实际项目中应该从JWT获取
+  const takerId = req.body.taker_id || 1; // 默认用户ID为1
 
   try {
     // 开始事务

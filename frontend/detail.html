@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>任务详情 - 任务悬赏平台</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -371,16 +372,18 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="nav-bar">
+    <!-- 导航栏将通过JavaScript动态加载 -->
+    
+    <!-- Back Navigation -->
+    <nav class="back-nav" style="background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(240, 246, 252, 0.1); padding: 15px 0;">
         <div class="container">
-            <div class="nav-content">
-                <a href="taskList.html" class="nav-back">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="taskList.html" style="display: flex; align-items: center; gap: 8px; color: #58a6ff; text-decoration: none; font-weight: 500; transition: all 0.2s ease; padding: 8px 16px; border-radius: 8px;">
                     <i class="fas fa-arrow-left"></i>
                     返回任务列表
                 </a>
-                <div class="nav-title">任务详情</div>
-                <div class="nav-actions">
+                <div style="font-size: 1.1rem; font-weight: 600; color: #f0f6fc;">任务详情</div>
+                <div>
                     <!-- Additional actions can be added here -->
                 </div>
             </div>

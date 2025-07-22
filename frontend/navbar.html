@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* 导航栏样式 */
+        .navbar {
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #58a6ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-brand:hover {
+            color: #79c0ff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: #f0f6fc;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            background: rgba(240, 246, 252, 0.06);
+            color: #58a6ff;
+        }
+
+        .nav-link.active {
+            background: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-login, .btn-register {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            color: #f0f6fc;
+            border: 1px solid rgba(240, 246, 252, 0.2);
+        }
+
+        .btn-login:hover {
+            background: rgba(240, 246, 252, 0.06);
+            border-color: rgba(240, 246, 252, 0.3);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .logout-btn {
+            background: #da3633;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #c5282f;
+            transform: translateY(-1px);
+        }
+
+        /* 移动端响应式 */
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .nav-links {
+                order: 1;
+                gap: 4px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+
+            .nav-user {
+                order: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="taskList.html" class="nav-brand">
+                    <i class="fas fa-tasks"></i>
+                    TaskReward
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="taskList.html" class="nav-link" data-page="taskList">
+                        <i class="fas fa-home"></i> 首页
+                    </a>
+                    <a href="publishTask.html" class="nav-link" data-page="publishTask">
+                        <i class="fas fa-plus"></i> 发布任务
+                    </a>
+                    <a href="myself.html" class="nav-link" data-page="myself">
+                        <i class="fas fa-user"></i> 个人中心
+                    </a>
+                </div>
+
+                <div class="nav-user" id="navUser">
+                    <!-- 未登录状态 -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="auth.html" class="btn-login">
+                            <i class="fas fa-sign-in-alt"></i> 登录
+                        </a>
+                        <a href="auth.html" class="btn-register">
+                            <i class="fas fa-user-plus"></i> 注册
+                        </a>
+                    </div>
+                    
+                    <!-- 登录状态 -->
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span id="userName">用户</span>
+                        <button class="logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> 退出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // 导航栏管理类
+        class NavbarManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.checkAuthStatus();
+                this.setActivePage();
+            }
+
+            // 检查登录状态
+            checkAuthStatus() {
+                const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                const userData = localStorage.getItem('userData');
+                const username = localStorage.getItem('username');
+
+                const authButtons = document.getElementById('authButtons');
+                const userInfo = document.getElementById('userInfo');
+                const userAvatar = document.getElementById('userAvatar');
+                const userName = document.getElementById('userName');
+
+                if (token && (userData || username)) {
+                    // 已登录状态
+                    authButtons.style.display = 'none';
+                    userInfo.style.display = 'flex';
+                    
+                    let displayName = username;
+                    if (userData) {
+                        try {
+                            const user = JSON.parse(userData);
+                            displayName = user.username || user.name || username;
+                        } catch (e) {
+                            console.warn('解析用户数据失败:', e);
+                        }
+                    }
+                    
+                    userName.textContent = displayName || '用户';
+                    userAvatar.textContent = (displayName || 'U').charAt(0).toUpperCase();
+                } else {
+                    // 未登录状态
+                    authButtons.style.display = 'flex';
+                    userInfo.style.display = 'none';
+                }
+            }
+
+            // 设置当前页面高亮
+            setActivePage() {
+                const currentPage = this.getCurrentPageName();
+                const navLinks = document.querySelectorAll('.nav-link');
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.page === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // 获取当前页面名称
+            getCurrentPageName() {
+                const path = window.location.pathname;
+                const fileName = path.split('/').pop().split('.')[0];
+                
+                // 页面映射
+                const pageMap = {
+                    'taskList': 'taskList',
+                    'index': 'taskList',
+                    '': 'taskList',
+                    'publishTask': 'publishTask', 
+                    'myself': 'myself',
+                    'detail': 'taskList' // 详情页归属到任务列表
+                };
+
+                return pageMap[fileName] || 'taskList';
+            }
+
+            // 更新用户信息
+            updateUserInfo(userInfo) {
+                const userName = document.getElementById('userName');
+                const userAvatar = document.getElementById('userAvatar');
+                
+                if (userName && userInfo.username) {
+                    userName.textContent = userInfo.username;
+                    userAvatar.textContent = userInfo.username.charAt(0).toUpperCase();
+                }
+                
+                this.checkAuthStatus();
+            }
+        }
+
+        // 全局函数
+        function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                // 清除所有认证相关数据
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userId');
+                
+                // 跳转到登录页面
+                window.location.href = 'auth.html';
+            }
+        }
+
+        // 初始化导航栏
+        let navbarManager;
+        document.addEventListener('DOMContentLoaded', function() {
+            navbarManager = new NavbarManager();
+        });
+
+        // 导出给其他页面使用
+        window.NavbarManager = NavbarManager;
+        window.navbarManager = navbarManager;
+    </script>
+</body>
+</html> 

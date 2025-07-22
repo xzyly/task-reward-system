@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务悬赏平台 - 让技能与需求完美匹配</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --accent: #a29bfe;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
+            color: #e0e6ed;
+            line-height: 1.6;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(26, 26, 46, 0.98);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* 英雄区域样式 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23667eea" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #b8c6db;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            color: #a0a9ba;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 特性区域样式 */
+        .features {
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #b8c6db;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+
+        .feature-description {
+            color: #b8c6db;
+            line-height: 1.6;
+        }
+
+        /* 统计区域样式 */
+        .stats {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 页脚样式 */
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            color: #b8c6db;
+            margin-bottom: 10px;
+        }
+
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-coins"></i> 任务悬赏平台
+            </div>
+            <div class="nav-buttons">
+                <a href="auth.html" class="btn btn-outline btn-small">
+                    <i class="fas fa-sign-in-alt"></i> 登录/注册
+                </a>
+                <a href="taskList.html" class="btn btn-primary btn-small">
+                    <i class="fas fa-list"></i> 浏览任务
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-rocket"></i> 任务悬赏平台</h1>
+            <p class="hero-subtitle">连接技能与需求，创造价值与机会</p>
+            <p class="hero-description">
+                这里是一个专业的任务悬赏平台，发布者可以发布各种任务需求，接单者可以展示自己的技能并获得报酬。
+                无论你是需要帮助完成项目，还是想要通过技能赚取收入，这里都是你的理想选择。
+            </p>
+            <div class="hero-buttons">
+                <a href="taskList.html" class="btn btn-primary">
+                    <i class="fas fa-search"></i> 立即浏览任务
+                </a>
+                <a href="auth.html" class="btn btn-outline">
+                    <i class="fas fa-user-plus"></i> 免费注册
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性区域 -->
+    <section class="features">
+        <div class="features-container">
+            <h2>平台特色</h2>
+            <p class="features-subtitle">为什么选择我们的任务悬赏平台？</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">安全可靠</h3>
+                    <p class="feature-description">
+                        完善的用户认证体系，保障交易安全，让每一次合作都有保障。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lightning-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">快速匹配</h3>
+                    <p class="feature-description">
+                        智能分类系统，快速找到合适的任务或接单者，提高工作效率。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="feature-title">透明定价</h3>
+                    <p class="feature-description">
+                        公开透明的悬赏金额，让每个人都能获得应有的价值回报。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">多元化技能</h3>
+                    <p class="feature-description">
+                        涵盖设计、开发、写作、翻译等多个领域，满足不同需求。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="feature-title">等级体系</h3>
+                    <p class="feature-description">
+                        完善的用户等级体系，帮助建立信任，提升合作质量。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="feature-title">灵活时间</h3>
+                    <p class="feature-description">
+                        自由选择工作时间和项目周期，实现工作与生活的平衡。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 统计区域 -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h3 id="taskCount">0</h3>
+                <p>发布任务数</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="userCount">0</h3>
+                <p>注册用户数</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="completedCount">0</h3>
+                <p>完成任务数</p>
+            </div>
+            <div class="stat-item">
+                <h3 id="totalReward">0</h3>
+                <p>累计悬赏金额</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 任务悬赏平台. 让技能与需求完美匹配</p>
+            <p>联系我们: support@taskplatform.com | 服务热线: 400-888-8888</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { taskAPI, userAPI } from './js/api.js';
+        import { AuthManager } from './js/utils.js';
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 导航栏滚动效果
+            window.addEventListener('scroll', () => {
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // 加载统计数据
+            await loadStatistics();
+
+            // 数字滚动动画
+            animateNumbers();
+        });
+
+        /**
+         * 加载统计数据
+         */
+        async function loadStatistics() {
+            try {
+                // 获取任务统计
+                const tasks = await taskAPI.getAllTasks();
+                const totalTasks = tasks.length;
+                const completedTasks = tasks.filter(task => task.status === 'COMPLETED').length;
+                const totalReward = tasks.reduce((sum, task) => sum + (task.reward || 0), 0);
+
+                // 模拟用户数据（实际项目中应该有专门的API）
+                const estimatedUsers = Math.max(10, Math.floor(totalTasks * 1.5));
+
+                // 更新统计数据
+                updateStatistic('taskCount', totalTasks);
+                updateStatistic('userCount', estimatedUsers);
+                updateStatistic('completedCount', completedTasks);
+                updateStatistic('totalReward', `¥${totalReward.toLocaleString()}`);
+            } catch (error) {
+                console.error('加载统计数据失败:', error);
+                // 显示默认数据
+                updateStatistic('taskCount', '50+');
+                updateStatistic('userCount', '100+');
+                updateStatistic('completedCount', '30+');
+                updateStatistic('totalReward', '¥10,000+');
+            }
+        }
+
+        /**
+         * 更新统计数据
+         */
+        function updateStatistic(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        /**
+         * 数字滚动动画
+         */
+        function animateNumbers() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statsItems = document.querySelectorAll('.stat-item h3');
+                        statsItems.forEach(item => {
+                            const finalValue = item.textContent;
+                            if (!isNaN(finalValue)) {
+                                animateNumber(item, 0, parseInt(finalValue), 2000);
+                            }
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            const statsSection = document.querySelector('.stats');
+            if (statsSection) {
+                observer.observe(statsSection);
+            }
+        }
+
+        /**
+         * 数字动画函数
+         */
+        function animateNumber(element, start, end, duration) {
+            const startTime = performance.now();
+            
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentValue = Math.floor(start + (end - start) * progress);
+                element.textContent = currentValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            requestAnimationFrame(updateNumber);
+        }
+    </script>
+</body>
+</html> 

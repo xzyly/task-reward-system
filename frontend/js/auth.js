@@ -1,10 +1,14 @@
 import { authAPI } from './api.js';
+import { MessageSystem, AuthManager, NavigationManager, FormValidator } from './utils.js';
 
 // DOM加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
+    // 设置页面标题
+    NavigationManager.setPageTitle('登录注册');
+    
     // 检查是否已登录（有token则跳转到任务列表）
-    if (localStorage.getItem('token')) {
-        window.location.href = '/taskList.html';
+    if (AuthManager.isLoggedIn()) {
+        NavigationManager.navigateTo('taskList.html');
         return;
     }
 
@@ -43,26 +47,31 @@ async function handleLogin() {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
 
-    // 前端验证
-    if (!username || !password) {
-        alert('用户名和密码不能为空');
-        return;
-    }
-
     try {
+        // 前端验证
+        FormValidator.validateRequired(username, '用户名');
+        FormValidator.validateRequired(password, '密码');
+
         // 调用API登录
-        const { token, userId, username: loggedInUsername } = await authAPI.login(username, password);
+        const result = await authAPI.login(username, password);
         
-        // 保存认证信息到本地存储
-        localStorage.setItem('token', token);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('username', loggedInUsername);
+        // 保存认证信息
+        AuthManager.saveAuth({
+            token: result.token,
+            userId: result.userId,
+            username: result.username || username,
+            user: result.user
+        });
+        
+        MessageSystem.success('登录成功！');
         
         // 跳转到任务列表页
-        window.location.href = '/taskList.html';
+        setTimeout(() => {
+            NavigationManager.navigateTo('taskList.html');
+        }, 1000);
     } catch (error) {
         console.error('登录失败:', error);
-        alert(error.message || '登录失败，请检查用户名和密码');
+        MessageSystem.error(error.message || '登录失败，请检查用户名和密码');
     }
 }
 
@@ -74,36 +83,35 @@ async function handleRegister() {
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('registerConfirm').value;
 
-    // 前端验证
-    if (password !== confirmPassword) {
-        alert('两次输入的密码不一致');
-        return;
-    }
-
-    if (username.length < 4 || username.length > 16) {
-        alert('用户名需为4-16个字符');
-        return;
-    }
-
-    if (password.length < 6) {
-        alert('密码长度至少6位');
-        return;
-    }
-
     try {
+        // 前端验证
+        FormValidator.validateRequired(username, '用户名');
+        FormValidator.validateRequired(password, '密码');
+        FormValidator.validateRequired(confirmPassword, '确认密码');
+        FormValidator.validateLength(username, 4, 16, '用户名');
+        FormValidator.validatePassword(password);
+
+        if (password !== confirmPassword) {
+            throw new Error('两次输入的密码不一致');
+        }
+
         // 调用API注册
         await authAPI.register(username, password);
-        alert('注册成功，请登录');
         
-        // 自动切换到登录标签页
+        MessageSystem.success('注册成功！请登录');
+        
+        // 切换到登录表单
         switchTab('login');
+        
+        // 预填用户名
+        document.getElementById('loginUsername').value = username;
         
         // 清空密码字段
         document.getElementById('registerPassword').value = '';
         document.getElementById('registerConfirm').value = '';
     } catch (error) {
         console.error('注册失败:', error);
-        alert(error.message || '注册失败，用户名可能已被占用');
+        MessageSystem.error(error.message || '注册失败，请稍后重试');
     }
 }
 
@@ -111,6 +119,5 @@ async function handleRegister() {
  * 退出登录（供其他页面调用）
  */
 export function logout() {
-    localStorage.clear();
-    window.location.href = '/auth.html';
+    AuthManager.logout();
 }

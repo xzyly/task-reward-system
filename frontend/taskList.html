@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>任务悬赏平台 - 任务列表</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -382,6 +383,32 @@
             }
         }
 
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
         /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 8px;
@@ -402,6 +429,8 @@
     </style>
 </head>
 <body>
+    <!-- 导航栏将通过JavaScript动态加载 -->
+    
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -453,28 +482,133 @@
     </div>
 
     <script>
-        // API配置
-        const API_BASE_URL = 'http://localhost:3000/api';
-        
+        // 内联工具函数，避免模块导入问题
+        const MessageSystem = {
+            show: function(message, type = 'info') {
+                const messageEl = document.createElement('div');
+                messageEl.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    background: ${type === 'error' ? '#ff7675' : '#00b894'};
+                    color: white; padding: 15px 20px; border-radius: 8px;
+                    font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: slideIn 0.3s ease-out;
+                `;
+                messageEl.textContent = message;
+                document.body.appendChild(messageEl);
+                setTimeout(() => messageEl.remove(), 3000);
+            },
+            success: function(msg) { this.show(msg, 'success'); },
+            error: function(msg) { this.show(msg, 'error'); }
+        };
+
+        const AuthManager = {
+            isLoggedIn: () => !!(localStorage.getItem('authToken') || localStorage.getItem('token')),
+            getCurrentUser: () => {
+                try {
+                    return JSON.parse(localStorage.getItem('userData') || '{}');
+                } catch { return {}; }
+            }
+        };
+
+        // 简化的API调用
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const url = `http://localhost:3000/api${endpoint}`;
+            const config = { method };
+            
+            if (body) {
+                config.headers = { 'Content-Type': 'application/json' };
+                config.body = JSON.stringify(body);
+            }
+            
+            const response = await fetch(url, config);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        }
+
         // 全局变量
         let allTasks = [];
         let currentTasks = [];
         let currentFilter = 'all';
 
         // 初始化页面
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTasks();
-            setupEventListeners();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('页面开始初始化...');
+            
+            try {
+                // 尝试加载导航栏，但不阻塞主功能
+                try {
+                    await loadNavbar();
+                } catch (navError) {
+                    console.warn('导航栏加载失败，但不影响主功能:', navError);
+                }
+                
+                // 设置事件监听器
+                setupEventListeners();
+                
+                // 加载任务
+                await loadTasks();
+                
+                console.log('页面初始化完成');
+            } catch (error) {
+                console.error('页面初始化失败:', error);
+                // 尝试只加载任务
+                try {
+                    await loadTasks();
+                } catch (taskError) {
+                    showError('页面初始化失败: ' + taskError.message);
+                }
+            }
         });
+
+        // 加载导航栏（简化版）
+        async function loadNavbar() {
+            try {
+                const response = await fetch('navbar.html');
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const navbar = doc.querySelector('.navbar');
+                    if (navbar) {
+                        document.body.insertBefore(navbar, document.body.firstChild);
+                    }
+                }
+            } catch (error) {
+                console.warn('导航栏加载失败:', error);
+            }
+        }
+
+        // 显示错误
+        function showError(message) {
+            const loadingEl = document.getElementById('loading');
+            const taskGrid = document.getElementById('taskGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            loadingEl.style.display = 'none';
+            taskGrid.style.display = 'none';
+            emptyState.style.display = 'block';
+            emptyState.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>出现错误</h3>
+                <p>${message}</p>
+                <button class="btn btn-primary" onclick="window.location.reload()">刷新页面</button>
+            `;
+        }
 
         // 设置事件监听器
         function setupEventListeners() {
             // 搜索功能
-            document.getElementById('searchInput').addEventListener('input', debounce(handleSearch, 300));
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(handleSearch, 300));
+            }
 
             // 筛选按钮
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     currentFilter = this.dataset.filter;
@@ -485,22 +619,49 @@
 
         // 加载任务列表
         async function loadTasks() {
-            showLoading(true);
+            const loadingEl = document.getElementById('loading');
+            const taskGrid = document.getElementById('taskGrid');
+            
+            console.log('开始加载任务...');
+            
+            // 显示加载状态
+            loadingEl.style.display = 'block';
+            taskGrid.style.display = 'none';
             
             try {
-                const response = await fetch(`${API_BASE_URL}/tasks`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                allTasks = await apiCall('/tasks');
+                console.log('任务加载成功:', allTasks.length, '个任务');
+                
+                if (!Array.isArray(allTasks)) {
+                    throw new Error('返回的任务数据格式不正确');
                 }
                 
-                allTasks = await response.json();
                 currentTasks = [...allTasks];
                 filterTasks();
-                showLoading(false);
+                
+                // 隐藏加载状态
+                loadingEl.style.display = 'none';
+                taskGrid.style.display = 'grid';
+                
             } catch (error) {
                 console.error('加载任务失败:', error);
-                showError('加载任务失败，请检查网络连接或稍后重试');
-                showLoading(false);
+                
+                loadingEl.style.display = 'none';
+                taskGrid.style.display = 'none';
+                
+                const emptyState = document.getElementById('emptyState');
+                if (emptyState) {
+                    emptyState.style.display = 'block';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>加载失败</h3>
+                        <p>无法加载任务列表: ${error.message}</p>
+                        <p>请确保后端服务器正在运行</p>
+                        <button class="btn btn-primary" onclick="loadTasks()">重新加载</button>
+                    `;
+                }
+                
+                MessageSystem.error('加载任务失败: ' + error.message);
             }
         }
 
@@ -509,9 +670,16 @@
             const taskGrid = document.getElementById('taskGrid');
             const emptyState = document.getElementById('emptyState');
 
-            if (tasks.length === 0) {
+            console.log(`准备渲染 ${tasks.length} 个任务`);
+
+            if (!tasks || tasks.length === 0) {
                 taskGrid.style.display = 'none';
                 emptyState.style.display = 'block';
+                emptyState.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h3>没有找到匹配的任务</h3>
+                    <p>尝试调整搜索条件或查看其他分类</p>
+                `;
                 return;
             }
 
@@ -522,12 +690,12 @@
                 <div class="task-card" onclick="viewTaskDetail(${task.id})">
                     <div class="task-header">
                         <div>
-                            <div class="task-title">${escapeHtml(task.title)}</div>
+                            <div class="task-title">${escapeHtml(task.title || '未命名任务')}</div>
                         </div>
-                        <div class="task-reward">¥${task.reward}</div>
+                        <div class="task-reward">¥${task.reward || 0}</div>
                     </div>
                     
-                    <div class="task-description">${escapeHtml(task.description || '')}</div>
+                    <div class="task-description">${escapeHtml(task.description || '暂无描述')}</div>
                     
                     <div class="task-meta">
                         <div class="task-level">
@@ -556,6 +724,8 @@
                     </div>
                 </div>
             `).join('');
+            
+            console.log('任务渲染完成');
         }
 
         // 获取状态样式类
@@ -580,16 +750,23 @@
 
         // 格式化时间
         function formatTime(timeStr) {
-            const date = new Date(timeStr);
-            const now = new Date();
-            const diff = now - date;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            
-            if (hours < 1) return '刚刚发布';
-            if (hours < 24) return `${hours}小时前`;
-            const days = Math.floor(hours / 24);
-            if (days < 7) return `${days}天前`;
-            return date.toLocaleDateString();
+            if (!timeStr) return '未知时间';
+            try {
+                const date = new Date(timeStr);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                
+                if (hours < 1) return '刚刚';
+                if (hours < 24) return `${hours}小时前`;
+                
+                const days = Math.floor(hours / 24);
+                if (days < 7) return `${days}天前`;
+                
+                return date.toLocaleDateString();
+            } catch (error) {
+                return '时间格式错误';
+            }
         }
 
         // 搜索处理
@@ -600,7 +777,7 @@
                 currentTasks = [...allTasks];
             } else {
                 currentTasks = allTasks.filter(task => 
-                    task.title.toLowerCase().includes(searchTerm) ||
+                    (task.title && task.title.toLowerCase().includes(searchTerm)) ||
                     (task.description && task.description.toLowerCase().includes(searchTerm))
                 );
             }
@@ -612,16 +789,19 @@
         function filterTasks() {
             let filteredTasks = [...currentTasks];
 
+            console.log(`当前筛选器: ${currentFilter}, 任务数量: ${filteredTasks.length}`);
+
             switch (currentFilter) {
                 case 'open':
                     filteredTasks = filteredTasks.filter(task => task.status === 'OPEN');
                     break;
                 case 'high-reward':
-                    filteredTasks = filteredTasks.filter(task => task.reward >= 500);
+                    filteredTasks = filteredTasks.filter(task => (task.reward || 0) >= 500);
                     break;
                 // 'all' 不需要额外筛选
             }
 
+            console.log(`筛选后任务数量: ${filteredTasks.length}`);
             renderTasks(filteredTasks);
         }
 
@@ -638,118 +818,47 @@
             };
         }
 
-        // 显示/隐藏加载状态
-        function showLoading(show) {
-            const loading = document.getElementById('loading');
-            const taskGrid = document.getElementById('taskGrid');
-            
-            if (show) {
-                loading.style.display = 'block';
-                taskGrid.style.display = 'none';
-            } else {
-                loading.style.display = 'none';
-                taskGrid.style.display = 'grid';
-            }
-        }
-
         // 查看任务详情
-        function viewTaskDetail(taskId) {
-            // 跳转到任务详情页面
+        window.viewTaskDetail = function(taskId) {
             window.location.href = `detail.html?id=${taskId}`;
         }
 
         // 接单功能
-        async function acceptTask(taskId) {
+        window.acceptTask = async function(taskId) {
+            const currentUserId = localStorage.getItem('userId');
+            
+            if (!currentUserId) {
+                MessageSystem.error('请先登录');
+                setTimeout(() => {
+                    window.location.href = 'auth.html';
+                }, 1500);
+                return;
+            }
+            
             if (confirm('确定要接取这个任务吗？')) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/tasks/${taskId}/accept`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            taker_id: 1 // 临时使用固定用户ID，后续需要从登录状态获取
-                        })
+                    await apiCall(`/tasks/${taskId}/accept`, 'POST', {
+                        taker_id: parseInt(currentUserId)
                     });
-
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.error || '接单失败');
-                    }
-
-                    // 接单成功，重新加载任务列表
+                    MessageSystem.success('接单成功！');
                     await loadTasks();
-                    showSuccess('接单成功！请及时完成任务。');
                 } catch (error) {
                     console.error('接单失败:', error);
-                    showError(error.message || '接单失败，请稍后重试');
+                    MessageSystem.error('接单失败: ' + (error.message || '请稍后重试'));
                 }
             }
         }
 
         // HTML转义函数
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // 显示错误消息
-        function showError(message) {
-            // 创建错误提示元素
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: rgba(231, 76, 60, 0.9);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 9999;
-                max-width: 300px;
-                backdrop-filter: blur(10px);
-            `;
-            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${escapeHtml(message)}`;
-            
-            document.body.appendChild(errorDiv);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.parentNode.removeChild(errorDiv);
-                }
-            }, 3000);
-        }
-
-        // 显示成功消息
-        function showSuccess(message) {
-            const successDiv = document.createElement('div');
-            successDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: rgba(46, 204, 113, 0.9);
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 9999;
-                max-width: 300px;
-                backdrop-filter: blur(10px);
-            `;
-            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(message)}`;
-            
-            document.body.appendChild(successDiv);
-            
-            // 3秒后自动移除
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.parentNode.removeChild(successDiv);
-                }
-            }, 3000);
-        }
+        // 重新加载任务 - 全局函数
+        window.loadTasks = loadTasks;
 
         // 页面滚动时的视觉效果
         window.addEventListener('scroll', function() {
@@ -757,6 +866,16 @@
             const rate = scrolled * -0.5;
             document.body.style.backgroundPosition = `center ${rate}px`;
         });
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>发布新任务 - 任务悬赏平台</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
     <style>
         /* 全局样式 */
         :root {
@@ -185,6 +186,8 @@
     </style>
 </head>
 <body>
+    <!-- 导航栏将通过JavaScript动态加载 -->
+    
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-plus-circle"></i> 发布新任务</h1>
@@ -263,44 +266,184 @@
         </div>
     </div>
 
-    <script type="module">
-        import { taskAPI } from '/js/api.js';
-        import { logout } from '/js/auth.js';
+    <script>
+        // 内联工具函数，避免模块导入问题
+        const MessageSystem = {
+            show: function(message, type = 'info', duration = 4000) {
+                const messageEl = document.createElement('div');
+                messageEl.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    background: ${type === 'error' ? '#ff7675' : '#00b894'};
+                    color: white; padding: 15px 20px; border-radius: 8px;
+                    font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: slideIn 0.3s ease-out;
+                `;
+                messageEl.innerHTML = `<i class="fas fa-${this.getIcon(type)}"></i> ${message}`;
+                document.body.appendChild(messageEl);
+                setTimeout(() => messageEl.remove(), duration);
+            },
+            success: function(msg) { this.show(msg, 'success'); },
+            error: function(msg) { this.show(msg, 'error'); },
+            getIcon: function(type) {
+                const icons = { success: 'check-circle', error: 'exclamation-triangle' };
+                return icons[type] || 'info-circle';
+            }
+        };
+
+        const AuthManager = {
+            isLoggedIn: () => !!(localStorage.getItem('authToken') || localStorage.getItem('token')),
+            getCurrentUser: () => {
+                try {
+                    const userData = localStorage.getItem('userData');
+                    const username = localStorage.getItem('username');
+                    return userData ? JSON.parse(userData) : (username ? { username } : null);
+                } catch { return null; }
+            },
+            requireAuth: function() {
+                if (!this.isLoggedIn()) {
+                    MessageSystem.error('请先登录后再发布任务');
+                    setTimeout(() => {
+                        window.location.href = 'auth.html?redirect=publishTask.html';
+                    }, 2000);
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        const NavigationManager = {
+            navigateTo: (url) => { window.location.href = url; }
+        };
+
+        const FormValidator = {
+            validateRequired: function(value, fieldName) {
+                if (!value || value.trim() === '') {
+                    throw new Error(`${fieldName}不能为空`);
+                }
+                return true;
+            },
+            validateLength: function(value, min, max, fieldName) {
+                if (value.length < min || value.length > max) {
+                    throw new Error(`${fieldName}长度应在${min}-${max}个字符之间`);
+                }
+                return true;
+            },
+            validateNumber: function(value, fieldName, min = null) {
+                const num = parseFloat(value);
+                if (isNaN(num)) {
+                    throw new Error(`${fieldName}必须是有效数字`);
+                }
+                if (min !== null && num < min) {
+                    throw new Error(`${fieldName}不能小于${min}`);
+                }
+                return true;
+            }
+        };
+
+        // 简化的API调用
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const url = `http://localhost:3000/api${endpoint}`;
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+            
+            const config = { 
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            if (body) {
+                config.body = JSON.stringify(body);
+            }
+            
+            const response = await fetch(url, config);
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.error || `请求失败: ${response.status}`);
+            }
+            return response.json();
+        }
+
+        // 加载导航栏（简化版）
+        async function loadNavbar() {
+            try {
+                const response = await fetch('navbar.html');
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const navbar = doc.querySelector('.navbar');
+                    if (navbar) {
+                        document.body.insertBefore(navbar, document.body.firstChild);
+                    }
+                }
+            } catch (error) {
+                console.warn('导航栏加载失败:', error);
+            }
+        }
 
         // DOM加载完成后初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            // 检查登录状态
-            if (!localStorage.getItem('token')) {
-                window.location.href = '/auth.html';
-                return;
-            }
-
-            // 显示用户名
-            const username = localStorage.getItem('username');
-            if (username) {
-                document.getElementById('usernameDisplay').textContent = username;
-            }
-
-            // 设置默认截止日期为3天后
-            const today = new Date();
-            const threeDaysLater = new Date(today);
-            threeDaysLater.setDate(today.getDate() + 3);
-            document.getElementById('taskDeadline').valueAsDate = threeDaysLater;
-
-            // 绑定事件
-            document.getElementById('backBtn').addEventListener('click', () => {
-                window.location.href = '/taskList.html';
-            });
-
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-
-            document.getElementById('cancelBtn').addEventListener('click', () => {
-                if (confirm('确定要取消发布吗？所有输入的内容将丢失。')) {
-                    window.location.href = '/taskList.html';
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 加载导航栏
+                await loadNavbar();
+                
+                // 检查登录状态
+                if (!AuthManager.requireAuth()) {
+                    return;
                 }
-            });
 
-            document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+                // 显示用户名
+                const user = AuthManager.getCurrentUser();
+                if (user && user.username) {
+                    const usernameDisplay = document.getElementById('usernameDisplay');
+                    if (usernameDisplay) {
+                        usernameDisplay.textContent = user.username;
+                    }
+                }
+
+                // 设置默认截止日期为3天后
+                const today = new Date();
+                const threeDaysLater = new Date(today);
+                threeDaysLater.setDate(today.getDate() + 3);
+                document.getElementById('taskDeadline').valueAsDate = threeDaysLater;
+
+                // 绑定事件
+                const backBtn = document.getElementById('backBtn');
+                if (backBtn) {
+                    backBtn.addEventListener('click', () => {
+                        NavigationManager.navigateTo('taskList.html');
+                    });
+                }
+
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        if (confirm('确定要退出登录吗？')) {
+                            ['authToken', 'token', 'userData', 'username', 'userId'].forEach(key => {
+                                localStorage.removeItem(key);
+                            });
+                            window.location.href = 'auth.html';
+                        }
+                    });
+                }
+
+                const cancelBtn = document.getElementById('cancelBtn');
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', () => {
+                        if (confirm('确定要取消发布吗？所有输入的内容将丢失。')) {
+                            NavigationManager.navigateTo('taskList.html');
+                        }
+                    });
+                }
+
+                document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+            } catch (error) {
+                console.error('页面初始化失败:', error);
+                MessageSystem.error('页面初始化失败，请刷新页面重试');
+            }
         });
 
         /**
@@ -316,15 +459,29 @@
                 deadline: document.getElementById('taskDeadline').value
             };
 
-            // 验证表单
-            if (!validateTask(taskData)) return;
-
             try {
-                const result = await taskAPI.createTask(taskData);
-                alert('任务发布成功！');
-                window.location.href = '/taskList.html';
+                // 验证表单
+                validateTask(taskData);
+                
+                // 显示加载状态
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+
+                const result = await apiCall('/tasks', 'POST', taskData);
+                
+                MessageSystem.success('任务发布成功！');
+                
+                setTimeout(() => {
+                    NavigationManager.navigateTo('taskList.html');
+                }, 1500);
             } catch (error) {
-                alert(error.message || '发布任务失败');
+                MessageSystem.error(error.message || '发布任务失败');
+            } finally {
+                // 恢复按钮状态
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发布任务';
             }
         }
 
@@ -332,39 +489,36 @@
          * 验证任务数据
          */
         function validateTask(task) {
-            if (!task.title || task.title.length < 5 || task.title.length > 50) {
-                alert('任务标题需为5-50个字符');
-                return false;
-            }
-
-            if (!task.description || task.description.length < 20 || task.description.length > 500) {
-                alert('任务描述需为20-500个字符');
-                return false;
-            }
-
-            if (isNaN(task.reward)) {
-                alert('请输入有效的悬赏金额');
-                return false;
-            }
-
-            if (task.reward <= 0) {
-                alert('悬赏金额必须大于0');
-                return false;
-            }
-
-            if (!task.deadline) {
-                alert('请选择截止日期');
-                return false;
-            }
+            FormValidator.validateRequired(task.title, '任务标题');
+            FormValidator.validateLength(task.title, 5, 50, '任务标题');
+            
+            FormValidator.validateRequired(task.description, '任务描述');
+            FormValidator.validateLength(task.description, 20, 500, '任务描述');
+            
+            FormValidator.validateNumber(task.reward, '悬赏金额', 0.01);
+            
+            FormValidator.validateRequired(task.deadline, '截止日期');
 
             const deadlineDate = new Date(task.deadline);
-            if (deadlineDate < new Date()) {
-                alert('截止日期不能早于今天');
-                return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (deadlineDate < today) {
+                throw new Error('截止日期不能早于今天');
             }
 
             return true;
         }
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

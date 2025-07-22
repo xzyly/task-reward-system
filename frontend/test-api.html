@@ -3,154 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API测试</title>
+    <title>API测试页面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
             padding: 20px;
             background: #f5f5f5;
         }
-        .test-item {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
             background: white;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         button {
             background: #007bff;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
-            margin: 5px;
+            margin: 10px 5px;
         }
         button:hover {
             background: #0056b3;
         }
         .result {
+            margin-top: 20px;
+            padding: 15px;
             background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 3px;
-            padding: 10px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            max-height: 300px;
-            overflow-y: auto;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
         }
         .error {
+            border-left-color: #dc3545;
             background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
         }
-        .success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
         }
     </style>
 </head>
 <body>
-    <h1>API测试页面</h1>
-    
-    <div class="test-item">
-        <h3>1. 测试服务器连接</h3>
-        <button onclick="testConnection()">测试连接</button>
-        <div id="connection-result" class="result"></div>
+    <div class="container">
+        <h1>API 测试页面</h1>
+        
+        <button onclick="testGetTasks()">测试获取任务列表</button>
+        <button onclick="testGetTaskDetail(273)">测试获取任务详情</button>
+        <button onclick="testAcceptTask(273)">测试接受任务</button>
+        
+        <div id="result"></div>
     </div>
 
-    <div class="test-item">
-        <h3>2. 获取所有任务</h3>
-        <button onclick="testGetAllTasks()">获取任务列表</button>
-        <div id="tasks-result" class="result"></div>
-    </div>
+    <script type="module">
+        import { taskAPI } from './js/api.js';
 
-    <div class="test-item">
-        <h3>3. 获取单个任务详情</h3>
-        <input type="number" id="task-id" placeholder="任务ID" value="1" min="1">
-        <button onclick="testGetTaskDetail()">获取任务详情</button>
-        <div id="task-detail-result" class="result"></div>
-    </div>
-
-    <script>
-        async function testConnection() {
-            const resultDiv = document.getElementById('connection-result');
-            resultDiv.textContent = '正在测试连接...';
-            resultDiv.className = 'result';
-            
+        // 测试获取任务列表
+        window.testGetTasks = async function() {
+            const resultDiv = document.getElementById('result');
             try {
-                const response = await fetch('/');
-                if (response.ok) {
-                    resultDiv.textContent = '✅ 服务器连接正常';
-                    resultDiv.className = 'result success';
-                } else {
-                    resultDiv.textContent = `❌ 服务器响应异常: ${response.status}`;
-                    resultDiv.className = 'result error';
-                }
+                resultDiv.innerHTML = '<div class="result">正在获取任务列表...</div>';
+                const tasks = await taskAPI.getAllTasks();
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>✅ 获取任务列表成功</h3>
+                        <p>共获取到 ${tasks.length} 个任务</p>
+                        <pre>${JSON.stringify(tasks, null, 2)}</pre>
+                    </div>
+                `;
             } catch (error) {
-                resultDiv.textContent = `❌ 连接失败: ${error.message}`;
-                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 获取任务列表失败</h3>
+                        <p>错误信息: ${error.message}</p>
+                        <pre>${error.stack || error}</pre>
+                    </div>
+                `;
             }
-        }
+        };
 
-        async function testGetAllTasks() {
-            const resultDiv = document.getElementById('tasks-result');
-            resultDiv.textContent = '正在获取任务列表...';
-            resultDiv.className = 'result';
-            
+        // 测试获取任务详情
+        window.testGetTaskDetail = async function(taskId) {
+            const resultDiv = document.getElementById('result');
             try {
-                const response = await fetch('/api/tasks');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    resultDiv.textContent = `✅ 获取成功，共 ${data.length} 个任务:\n\n${JSON.stringify(data, null, 2)}`;
-                    resultDiv.className = 'result success';
-                } else {
-                    resultDiv.textContent = `❌ 获取失败: ${JSON.stringify(data, null, 2)}`;
-                    resultDiv.className = 'result error';
-                }
+                resultDiv.innerHTML = '<div class="result">正在获取任务详情...</div>';
+                const task = await taskAPI.getTaskById(taskId);
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>✅ 获取任务详情成功</h3>
+                        <pre>${JSON.stringify(task, null, 2)}</pre>
+                    </div>
+                `;
             } catch (error) {
-                resultDiv.textContent = `❌ 请求失败: ${error.message}`;
-                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 获取任务详情失败</h3>
+                        <p>错误信息: ${error.message}</p>
+                        <pre>${error.stack || error}</pre>
+                    </div>
+                `;
             }
-        }
+        };
 
-        async function testGetTaskDetail() {
-            const taskId = document.getElementById('task-id').value;
-            const resultDiv = document.getElementById('task-detail-result');
-            
-            if (!taskId) {
-                resultDiv.textContent = '❌ 请输入任务ID';
-                resultDiv.className = 'result error';
-                return;
-            }
-            
-            resultDiv.textContent = `正在获取任务 ${taskId} 的详情...`;
-            resultDiv.className = 'result';
-            
+        // 测试接受任务
+        window.testAcceptTask = async function(taskId) {
+            const resultDiv = document.getElementById('result');
             try {
-                const response = await fetch(`/api/tasks/${taskId}`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    resultDiv.textContent = `✅ 获取成功:\n\n${JSON.stringify(data, null, 2)}`;
-                    resultDiv.className = 'result success';
-                } else {
-                    resultDiv.textContent = `❌ 获取失败 (${response.status}): ${JSON.stringify(data, null, 2)}`;
-                    resultDiv.className = 'result error';
-                }
+                resultDiv.innerHTML = '<div class="result">正在接受任务...</div>';
+                const result = await taskAPI.acceptTask(taskId);
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>✅ 接受任务成功</h3>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                `;
             } catch (error) {
-                resultDiv.textContent = `❌ 请求失败: ${error.message}`;
-                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ 接受任务失败</h3>
+                        <p>错误信息: ${error.message}</p>
+                        <pre>${error.stack || error}</pre>
+                    </div>
+                `;
             }
-        }
+        };
 
-        // 页面加载后自动测试连接
-        window.addEventListener('load', testConnection);
+        // 页面加载时自动测试获取任务列表
+        document.addEventListener('DOMContentLoaded', function() {
+            testGetTasks();
+        });
     </script>
 </body>
 </html> 

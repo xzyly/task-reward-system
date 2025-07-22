@@ -31,6 +31,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend', 'taskList.html'));
 });
 
+// 需要认证的路由
+app.post('/api/protected-route', authenticate, (req, res) => {
+    // 可以通过req.userId获取当前用户ID
+    res.json({ message: '认证成功', userId: req.userId });
+});
+
+
+
 // 导出app以便测试使用
 module.exports = app;
 

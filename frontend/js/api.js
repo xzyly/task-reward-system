@@ -82,14 +82,12 @@ export const authAPI = {
 
     register: (username, password) =>
 
-        makeRequest('/auth/register', 'POST', { username, password }, false),
         makeRequest('/register', 'POST', { username, password }, false),
 
 
 
     login: (username, password) =>
 
-        makeRequest('/auth/login', 'POST', { username, password }, false)
         makeRequest('/login', 'POST', { username, password }, false)
 
 };

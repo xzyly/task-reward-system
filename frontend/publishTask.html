@@ -3,522 +3,1327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>发布新任务 - 任务悬赏平台</title>
+    <title>发布任务 - TaskHub</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-briefcase"></i>
+                TaskHub
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="index.html" class="nav-link">首页</a></li>
+                <li><a href="taskList.html" class="nav-link">任务大厅</a></li>
+                <li><a href="publishTask.html" class="nav-link active">发布任务</a></li>
+                <li><a href="myself.html" class="nav-link">个人中心</a></li>
+                <!-- 未登录状态 -->
+                <li id="login-btn" style="display: none;"><a href="auth.html" class="nav-link btn btn-primary">登录/注册</a></li>
+                <!-- 已登录状态 -->
+                <li id="user-menu" class="user-menu" style="display: none;">
+                    <div class="user-dropdown">
+                        <button class="user-info-btn" id="userInfoBtn">
+                            <i class="fas fa-user"></i>
+                            <span id="username">用户名</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="myself.html" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人中心
+                            </a>
+                            <a href="publishTask.html" class="dropdown-item">
+                                <i class="fas fa-plus"></i>
+                                发布任务
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="main-content">
+        <!-- 页面标题区域 -->
+        <section class="page-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h1 class="page-title">发布新任务</h1>
+                        <p class="page-subtitle">详细描述您的需求，吸引优秀的自由职业者为您提供服务</p>
+                    </div>
+                    <div class="col-4 text-right">
+                        <div class="help-tip">
+                            <i class="fas fa-info-circle"></i>
+                            <span>需要帮助？查看<a href="#" class="text-primary">发布指南</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 发布表单区域 -->
+        <section class="publish-section">
+            <div class="container">
+                <div class="row">
+                    <!-- 主表单 -->
+                    <div class="col-8">
+                        <form id="publishForm" class="publish-form">
+                            <!-- 步骤指示器 -->
+                            <div class="steps-indicator mb-5">
+                                <div class="step active" data-step="1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">基本信息</div>
+                                </div>
+                                <div class="step" data-step="2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">详细要求</div>
+                                </div>
+                                <div class="step" data-step="3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">预算与时间</div>
+                                </div>
+                                <div class="step" data-step="4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">确认发布</div>
+                                </div>
+                            </div>
+
+                            <!-- 步骤1：基本信息 -->
+                            <div class="step-content active" data-step="1">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-info-circle"></i>
+                                            基本信息
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="taskTitle" class="form-label required">任务标题</label>
+                                            <input type="text" 
+                                                   id="taskTitle" 
+                                                   name="title" 
+                                                   class="form-control" 
+                                                   placeholder="简洁明确地描述您的任务需求..."
+                                                   required>
+                                            <small class="form-text">建议30-50个字符，清晰表达任务内容</small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="taskCategory" class="form-label required">任务分类</label>
+                                            <select id="taskCategory" name="category" class="form-select" required>
+                                                <option value="">请选择任务分类</option>
+                                                <option value="技术开发">技术开发</option>
+                                                <option value="创意设计">创意设计</option>
+                                                <option value="市场营销">市场营销</option>
+                                                <option value="商务咨询">商务咨询</option>
+                                                <option value="文案写作">文案写作</option>
+                                                <option value="数据分析">数据分析</option>
+                                                <option value="翻译服务">翻译服务</option>
+                                                <option value="其他">其他</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="taskDescription" class="form-label required">任务描述</label>
+                                            <textarea id="taskDescription" 
+                                                      name="description" 
+                                                      class="form-control form-textarea" 
+                                                      rows="6" 
+                                                      placeholder="详细描述您的任务需求，包括具体要求、交付物、技能要求等..."
+                                                      required></textarea>
+                                            <small class="form-text">详细的描述有助于吸引合适的服务商</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 步骤2：详细要求 -->
+                            <div class="step-content" data-step="2">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-list-check"></i>
+                                            详细要求
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="requirements" class="form-label">具体要求</label>
+                                            <textarea id="requirements" 
+                                                      name="requirements" 
+                                                      class="form-control form-textarea" 
+                                                      rows="5" 
+                                                      placeholder="列出具体的要求和标准，例如：技术栈、设计风格、交付格式等..."></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="skills" class="form-label">所需技能</label>
+                                            <input type="text" 
+                                                   id="skills" 
+                                                   name="skills" 
+                                                   class="form-control" 
+                                                   placeholder="请输入所需技能，用逗号分隔，如：JavaScript, React, UI设计">
+                                            <small class="form-text">明确的技能要求有助于匹配合适的服务商</small>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="deliverables" class="form-label">交付物</label>
+                                            <textarea id="deliverables" 
+                                                      name="deliverables" 
+                                                      class="form-control form-textarea" 
+                                                      rows="4" 
+                                                      placeholder="描述期望的交付物，如：源代码、设计文件、文档、报告等..."></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">任务紧急程度</label>
+                                            <div class="priority-options">
+                                                <label class="priority-option">
+                                                    <input type="radio" name="priority" value="low" checked>
+                                                    <span class="priority-badge priority-low">
+                                                        <i class="fas fa-clock"></i>
+                                                        普通
+                                                    </span>
+                                                    <small>7天以上完成</small>
+                                                </label>
+                                                <label class="priority-option">
+                                                    <input type="radio" name="priority" value="medium">
+                                                    <span class="priority-badge priority-medium">
+                                                        <i class="fas fa-bolt"></i>
+                                                        加急
+                                                    </span>
+                                                    <small>3-7天完成</small>
+                                                </label>
+                                                <label class="priority-option">
+                                                    <input type="radio" name="priority" value="high">
+                                                    <span class="priority-badge priority-high">
+                                                        <i class="fas fa-fire"></i>
+                                                        紧急
+                                                    </span>
+                                                    <small>1-3天完成</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 步骤3：预算与时间 -->
+                            <div class="step-content" data-step="3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-money-bill"></i>
+                                            预算与时间
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                                                                 <div class="form-group">
+                                                     <label for="reward" class="form-label required">项目预算</label>
+                                                     <div class="budget-input-group">
+                                                         <span class="budget-currency">￥</span>
+                                                         <input type="number" 
+                                                                id="reward" 
+                                                                name="reward" 
+                                                                class="form-control budget-input" 
+                                                                placeholder="0"
+                                                                min="1"
+                                                                required>
+                                                     </div>
+                                                     <small class="form-text">合理的预算有助于吸引优质服务商</small>
+                                                 </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group">
+                                                    <label for="deadline" class="form-label required">截止日期</label>
+                                                    <input type="date" 
+                                                           id="deadline" 
+                                                           name="deadline" 
+                                                           class="form-control" 
+                                                           required>
+                                                    <small class="form-text">请设置合理的完成时间</small>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="budget-suggestions">
+                                            <h5>预算参考</h5>
+                                            <div class="suggestion-grid">
+                                                <div class="suggestion-item" data-budget="500">
+                                                    <div class="suggestion-amount">￥500</div>
+                                                    <div class="suggestion-desc">简单任务</div>
+                                                </div>
+                                                <div class="suggestion-item" data-budget="2000">
+                                                    <div class="suggestion-amount">￥2,000</div>
+                                                    <div class="suggestion-desc">中等任务</div>
+                                                </div>
+                                                <div class="suggestion-item" data-budget="5000">
+                                                    <div class="suggestion-amount">￥5,000</div>
+                                                    <div class="suggestion-desc">复杂任务</div>
+                                                </div>
+                                                <div class="suggestion-item" data-budget="10000">
+                                                    <div class="suggestion-amount">￥10,000+</div>
+                                                    <div class="suggestion-desc">大型项目</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">付款方式</label>
+                                            <div class="payment-options">
+                                                <label class="payment-option">
+                                                    <input type="radio" name="payment_type" value="fixed" checked>
+                                                    <span class="payment-badge">
+                                                        <i class="fas fa-handshake"></i>
+                                                        固定价格
+                                                    </span>
+                                                    <small>完成后一次性支付</small>
+                                                </label>
+                                                <label class="payment-option">
+                                                    <input type="radio" name="payment_type" value="milestone">
+                                                    <span class="payment-badge">
+                                                        <i class="fas fa-tasks"></i>
+                                                        里程碑付款
+                                                    </span>
+                                                    <small>按阶段分期支付</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 步骤4：确认发布 -->
+                            <div class="step-content" data-step="4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">
+                                            <i class="fas fa-check-circle"></i>
+                                            确认发布
+                                        </h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="preview-section">
+                                            <h5>任务预览</h5>
+                                            <div class="task-preview" id="taskPreview">
+                                                <!-- 任务预览内容将在这里动态生成 -->
+                                            </div>
+                                        </div>
+
+                                        <div class="terms-section">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="agreeTerms" class="form-check-input" required>
+                                                <label for="agreeTerms" class="form-check-label">
+                                                    我已阅读并同意 <a href="#" class="text-primary">服务条款</a> 和 <a href="#" class="text-primary">隐私政策</a>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="publish-actions">
+                                            <button type="button" class="btn btn-outline-primary" onclick="saveDraft()">
+                                                <i class="fas fa-save"></i>
+                                                保存草稿
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-paper-plane"></i>
+                                                发布任务
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 导航按钮 -->
+                            <div class="step-navigation">
+                                <button type="button" class="btn btn-outline-primary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i>
+                                    上一步
+                                </button>
+                                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                                    下一步
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 侧边栏 -->
+                    <div class="col-4">
+                        <div class="sidebar">
+                            <!-- 发布提示 -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-lightbulb"></i>
+                                        发布提示
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <div>
+                                            <strong>标题要清晰</strong>
+                                            <p>简洁明了地描述任务需求</p>
+                                        </div>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <div>
+                                            <strong>描述要详细</strong>
+                                            <p>提供充分的任务细节和要求</p>
+                                        </div>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <div>
+                                            <strong>预算要合理</strong>
+                                            <p>设置公平的项目预算范围</p>
+                                        </div>
+                                    </div>
+                                    <div class="tip-item">
+                                        <i class="fas fa-check-circle text-success"></i>
+                                        <div>
+                                            <strong>时间要充裕</strong>
+                                            <p>给服务商足够的完成时间</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 统计信息 -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        平台统计
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="stat-row">
+                                        <span>活跃服务商</span>
+                                        <strong>2,500+</strong>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>完成任务</span>
+                                        <strong>8,000+</strong>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>平均完成时间</span>
+                                        <strong>5天</strong>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>满意度</span>
+                                        <strong>98%</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 自定义样式 -->
     <style>
-        /* 全局样式 */
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #00b894;
-            --danger: #ff7675;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
+        /* 用户下拉菜单样式 */
+        .user-menu { position: relative; }
+        .user-dropdown { position: relative; }
+        .user-info-btn {
+            display: flex; align-items: center; gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: transparent; border: 1px solid var(--border-medium);
+            border-radius: var(--radius-button); color: var(--text-secondary);
+            cursor: pointer; transition: var(--transition-normal);
+            font-size: var(--font-size-sm);
+        }
+        .user-info-btn:hover {
+            background: var(--bg-hover); border-color: var(--primary); color: var(--primary);
+        }
+        .dropdown-menu {
+            position: absolute; top: 100%; right: 0; margin-top: var(--spacing-sm);
+            background: var(--bg-card); border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+            min-width: 200px; opacity: 0; visibility: hidden;
+            transform: translateY(-10px); transition: var(--transition-normal); z-index: 1000;
+        }
+        .dropdown-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-item {
+            display: flex; align-items: center; gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--text-secondary); text-decoration: none;
+            border: none; background: none; width: 100%; text-align: left;
+            cursor: pointer; transition: var(--transition-normal);
+            font-size: var(--font-size-sm);
+        }
+        .dropdown-item:hover { background: var(--bg-hover); color: var(--primary); }
+        .dropdown-divider { height: 1px; background: var(--border-light); margin: var(--spacing-xs) 0; }
+
+        /* 页面标题区域 */
+        .page-header {
+            padding: var(--spacing-3xl) 0 var(--spacing-xl) 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            border-bottom: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
         }
 
-        * {
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .page-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
-            color: #e0e6ed;
-            min-height: 100vh;
+        .help-tip {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
         }
 
-        /* 容器样式 */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        /* 发布表单区域 */
+        .publish-section {
+            padding: var(--spacing-xl) 0 var(--spacing-3xl) 0;
         }
 
-        /* 头部样式 */
-        .header {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
+        .publish-form {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* 步骤指示器 */
+        .steps-indicator {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 用户控制区域 */
-        .user-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--light);
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        /* 导航按钮 */
-        .nav-buttons {
-            margin-bottom: 20px;
-        }
-
-        /* 表单样式 */
-        .task-form {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #b8c6db;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: var(--light);
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .input-with-icon {
+            margin-bottom: var(--spacing-2xl);
             position: relative;
         }
 
-        .input-with-icon span {
+        .steps-indicator::before {
+            content: '';
             position: absolute;
-            right: 15px;
+            top: 25px;
+            left: 25px;
+            right: 25px;
+            height: 2px;
+            background: var(--border-light);
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+            transition: var(--transition-normal);
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: var(--text-white);
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: var(--text-white);
+        }
+
+        .step-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* 步骤内容 */
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        /* 表单元素 */
+        .form-label.required::after {
+            content: ' *';
+            color: var(--danger);
+        }
+
+        .form-text {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            margin-top: var(--spacing-xs);
+        }
+
+        /* 优先级选项 */
+        .priority-options {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-sm);
+        }
+
+        .priority-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .priority-option input[type="radio"] {
+            display: none;
+        }
+
+        .priority-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-normal);
+            margin-bottom: var(--spacing-xs);
+            width: 100px;
+        }
+
+        .priority-badge i {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .priority-low {
+            color: var(--text-secondary);
+        }
+
+        .priority-medium {
+            color: var(--warning);
+        }
+
+        .priority-high {
+            color: var(--danger);
+        }
+
+        .priority-option input[type="radio"]:checked + .priority-badge {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .priority-option small {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* 预算输入 */
+        .budget-input-group {
+            position: relative;
+        }
+
+        .budget-currency {
+            position: absolute;
+            left: var(--spacing-lg);
             top: 50%;
             transform: translateY(-50%);
-            color: #b8c6db;
+            color: var(--text-secondary);
+            font-weight: var(--font-weight-medium);
         }
 
-        /* 按钮样式 */
-        .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
+        .budget-input {
+            padding-left: 35px;
+        }
+
+        /* 预算建议 */
+        .budget-suggestions {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+        }
+
+        .budget-suggestions h5 {
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .suggestion-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .suggestion-item {
+            text-align: center;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition-normal);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
+        .suggestion-item:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #00cec9);
-            color: white;
+        .suggestion-amount {
+            font-weight: var(--font-weight-bold);
+            color: var(--primary);
+            margin-bottom: var(--spacing-xs);
         }
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+        .suggestion-desc {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
         }
 
-        /* 表单操作按钮 */
-        .form-actions {
+        /* 付款方式 */
+        .payment-options {
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-sm);
+        }
+
+        .payment-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .payment-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border: 2px solid var(--border-medium);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-normal);
+            margin-bottom: var(--spacing-xs);
+            width: 100%;
+        }
+
+        .payment-badge i {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--spacing-xs);
+            color: var(--primary);
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-badge {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .payment-option small {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* 任务预览 */
+        .task-preview {
+            padding: var(--spacing-lg);
+            background: var(--bg-hover);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* 条款部分 */
+        .terms-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+        }
+
+        .form-check-input {
+            margin-top: 3px;
+        }
+
+        /* 发布操作 */
+        .publish-actions {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+        }
+
+        /* 步骤导航 */
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-2xl);
+            padding-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* 侧边栏 */
+        .sidebar .card {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .tip-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tip-item i {
+            margin-top: 2px;
+        }
+
+        .tip-item strong {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .tip-item p {
+            margin: 0;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-row strong {
+            color: var(--primary);
         }
 
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
+            .page-header .row {
                 text-align: center;
-                gap: 15px;
             }
-        
-            .user-controls {
+
+            .help-tip {
                 justify-content: center;
+                margin-top: var(--spacing-lg);
             }
-        
-            .form-row {
+
+            .steps-indicator {
+                flex-wrap: wrap;
+                gap: var(--spacing-lg);
+            }
+
+            .steps-indicator::before {
+                display: none;
+            }
+
+            .priority-options,
+            .payment-options {
                 flex-direction: column;
-                gap: 15px;
+                gap: var(--spacing-md);
+            }
+
+            .suggestion-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .step-navigation {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .publish-actions {
+                flex-direction: column;
             }
         }
     </style>
-</head>
-<body>
-    <!-- 导航栏将通过JavaScript动态加载 -->
-    
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-plus-circle"></i> 发布新任务</h1>
-            <div class="user-controls">
-                <span id="usernameDisplay"></span>
-                <button id="logoutBtn" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> 退出
-                </button>
-            </div>
-        </div>
 
-        <div class="nav-buttons">
-            <button id="backBtn" class="btn btn-primary">
-                <i class="fas fa-arrow-left"></i> 返回
-            </button>
-        </div>
-
-        <div class="task-form">
-            <div class="form-group">
-                <label for="taskTitle"><i class="fas fa-heading"></i> 任务标题</label>
-                <input type="text" id="taskTitle" placeholder="请输入任务标题(5-50字)" required>
-            </div>
-
-            <div class="form-group">
-                <label for="taskDescription"><i class="fas fa-align-left"></i> 任务描述</label>
-                <textarea id="taskDescription" placeholder="请详细描述任务要求、验收标准等信息(20-500字)" required></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="taskCategory"><i class="fas fa-tag"></i> 任务分类</label>
-                    <select id="taskCategory">
-                        <option value="design">设计</option>
-                        <option value="development">开发</option>
-                        <option value="writing">写作</option>
-                        <option value="translation">翻译</option>
-                        <option value="other">其他</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="taskDeadline"><i class="fas fa-calendar-alt"></i> 截止日期</label>
-                    <input type="date" id="taskDeadline" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="taskReward"><i class="fas fa-coins"></i> 悬赏金额</label>
-                    <div class="input-with-icon">
-                        <input type="number" id="taskReward" placeholder="0.00" min="0" step="0.01" required>
-                        <span>元</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="taskLevel"><i class="fas fa-star"></i> 最低等级</label>
-                    <select id="taskLevel">
-                        <option value="1">Lv.1 新手</option>
-                        <option value="2">Lv.2 初级</option>
-                        <option value="3" selected>Lv.3 中级</option>
-                        <option value="4">Lv.4 高级</option>
-                        <option value="5">Lv.5 专家</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button id="cancelBtn" class="btn btn-danger">
-                    <i class="fas fa-times"></i> 取消
-                </button>
-                <button id="submitBtn" class="btn btn-success">
-                    <i class="fas fa-paper-plane"></i> 发布任务
-                </button>
-            </div>
-        </div>
-    </div>
-
+    <!-- JavaScript -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
     <script>
-        // 内联工具函数，避免模块导入问题
-        const MessageSystem = {
-            show: function(message, type = 'info', duration = 4000) {
-                const messageEl = document.createElement('div');
-                messageEl.style.cssText = `
-                    position: fixed; top: 20px; right: 20px; z-index: 10000;
-                    background: ${type === 'error' ? '#ff7675' : '#00b894'};
-                    color: white; padding: 15px 20px; border-radius: 8px;
-                    font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    animation: slideIn 0.3s ease-out;
-                `;
-                messageEl.innerHTML = `<i class="fas fa-${this.getIcon(type)}"></i> ${message}`;
-                document.body.appendChild(messageEl);
-                setTimeout(() => messageEl.remove(), duration);
-            },
-            success: function(msg) { this.show(msg, 'success'); },
-            error: function(msg) { this.show(msg, 'error'); },
-            getIcon: function(type) {
-                const icons = { success: 'check-circle', error: 'exclamation-triangle' };
-                return icons[type] || 'info-circle';
-            }
-        };
-
-        const AuthManager = {
-            isLoggedIn: () => !!(localStorage.getItem('authToken') || localStorage.getItem('token')),
-            getCurrentUser: () => {
-                try {
-                    const userData = localStorage.getItem('userData');
-                    const username = localStorage.getItem('username');
-                    return userData ? JSON.parse(userData) : (username ? { username } : null);
-                } catch { return null; }
-            },
-            requireAuth: function() {
-                if (!this.isLoggedIn()) {
-                    MessageSystem.error('请先登录后再发布任务');
-                    setTimeout(() => {
-                        window.location.href = 'auth.html?redirect=publishTask.html';
-                    }, 2000);
-                    return false;
-                }
-                return true;
-            }
-        };
-
-        const NavigationManager = {
-            navigateTo: (url) => { window.location.href = url; }
-        };
-
-        const FormValidator = {
-            validateRequired: function(value, fieldName) {
-                if (!value || value.trim() === '') {
-                    throw new Error(`${fieldName}不能为空`);
-                }
-                return true;
-            },
-            validateLength: function(value, min, max, fieldName) {
-                if (value.length < min || value.length > max) {
-                    throw new Error(`${fieldName}长度应在${min}-${max}个字符之间`);
-                }
-                return true;
-            },
-            validateNumber: function(value, fieldName, min = null) {
-                const num = parseFloat(value);
-                if (isNaN(num)) {
-                    throw new Error(`${fieldName}必须是有效数字`);
-                }
-                if (min !== null && num < min) {
-                    throw new Error(`${fieldName}不能小于${min}`);
-                }
-                return true;
-            }
-        };
-
-        // 简化的API调用
-        async function apiCall(endpoint, method = 'GET', body = null) {
-            const url = `http://localhost:3000/api${endpoint}`;
-            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-            
-            const config = { 
-                method,
-                headers: { 'Content-Type': 'application/json' }
+        // API调用函数
+        async function makeRequest(endpoint, method = 'GET', body = null, auth = true) {
+            const API_BASE_URL = 'http://localhost:3000/api';
+            const headers = {
+                'Content-Type': 'application/json'
             };
-            
-            if (token) {
-                config.headers['Authorization'] = `Bearer ${token}`;
+
+            if (auth) {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
             }
-            
+
+            const config = {
+                method,
+                headers
+            };
+
             if (body) {
                 config.body = JSON.stringify(body);
             }
-            
-            const response = await fetch(url, config);
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(error.error || `请求失败: ${response.status}`);
-            }
-            return response.json();
-        }
 
-        // 加载导航栏（简化版）
-        async function loadNavbar() {
             try {
-                const response = await fetch('navbar.html');
-                if (response.ok) {
-                    const html = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const navbar = doc.querySelector('.navbar');
-                    if (navbar) {
-                        document.body.insertBefore(navbar, document.body.firstChild);
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        errorData = { error: `请求失败: ${response.status} ${response.statusText}` };
                     }
+                    throw new Error(errorData.error || '请求失败');
                 }
+
+                const contentLength = response.headers.get('content-length');
+                if (contentLength === '0' || !contentLength) {
+                    return null;
+                }
+
+                return await response.json();
             } catch (error) {
-                console.warn('导航栏加载失败:', error);
+                console.error('API请求错误:', error);
+                throw error;
             }
         }
+    </script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
 
-        // DOM加载完成后初始化
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // 加载导航栏
-                await loadNavbar();
-                
-                // 检查登录状态
-                if (!AuthManager.requireAuth()) {
-                    return;
-                }
+                 // 页面加载完成后执行
+         document.addEventListener('DOMContentLoaded', function() {
+             // 检查登录状态并更新导航栏
+             updateNavbar();
 
-                // 显示用户名
-                const user = AuthManager.getCurrentUser();
-                if (user && user.username) {
-                    const usernameDisplay = document.getElementById('usernameDisplay');
-                    if (usernameDisplay) {
-                        usernameDisplay.textContent = user.username;
-                    }
-                }
+             // 导航栏滚动效果
+             window.addEventListener('scroll', function() {
+                 const navbar = document.getElementById('navbar');
+                 if (window.scrollY > 50) {
+                     navbar.classList.add('scrolled');
+                 } else {
+                     navbar.classList.remove('scrolled');
+                 }
+             });
 
-                // 设置默认截止日期为3天后
-                const today = new Date();
-                const threeDaysLater = new Date(today);
-                threeDaysLater.setDate(today.getDate() + 3);
-                document.getElementById('taskDeadline').valueAsDate = threeDaysLater;
+            // 设置最小截止日期为明天
+            const deadlineInput = document.getElementById('deadline');
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            deadlineInput.min = tomorrow.toISOString().split('T')[0];
 
-                // 绑定事件
-                const backBtn = document.getElementById('backBtn');
-                if (backBtn) {
-                    backBtn.addEventListener('click', () => {
-                        NavigationManager.navigateTo('taskList.html');
-                    });
-                }
+                         // 预算建议点击事件
+             document.querySelectorAll('.suggestion-item').forEach(item => {
+                 item.addEventListener('click', function() {
+                     const budget = this.dataset.budget;
+                     document.getElementById('reward').value = budget;
+                 });
+             });
 
-                const logoutBtn = document.getElementById('logoutBtn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', () => {
-                        if (confirm('确定要退出登录吗？')) {
-                            ['authToken', 'token', 'userData', 'username', 'userId'].forEach(key => {
-                                localStorage.removeItem(key);
-                            });
-                            window.location.href = 'auth.html';
-                        }
-                    });
-                }
-
-                const cancelBtn = document.getElementById('cancelBtn');
-                if (cancelBtn) {
-                    cancelBtn.addEventListener('click', () => {
-                        if (confirm('确定要取消发布吗？所有输入的内容将丢失。')) {
-                            NavigationManager.navigateTo('taskList.html');
-                        }
-                    });
-                }
-
-                document.getElementById('submitBtn').addEventListener('click', handleSubmit);
-            } catch (error) {
-                console.error('页面初始化失败:', error);
-                MessageSystem.error('页面初始化失败，请刷新页面重试');
-            }
+            // 表单提交事件
+            document.getElementById('publishForm').addEventListener('submit', handleSubmit);
         });
 
-        /**
-         * 处理表单提交
-         */
-        async function handleSubmit() {
-            const taskData = {
-                title: document.getElementById('taskTitle').value.trim(),
-                description: document.getElementById('taskDescription').value.trim(),
-                reward: parseFloat(document.getElementById('taskReward').value),
-                min_level: parseInt(document.getElementById('taskLevel').value),
-                category: document.getElementById('taskCategory').value,
-                deadline: document.getElementById('taskDeadline').value
-            };
+        // 下一步
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                if (validateCurrentStep()) {
+                    // 隐藏当前步骤
+                    document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.remove('active');
+                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('completed');
 
-            try {
-                // 验证表单
-                validateTask(taskData);
-                
-                // 显示加载状态
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发布中...';
+                    currentStep++;
 
-                const result = await apiCall('/tasks', 'POST', taskData);
-                
-                MessageSystem.success('任务发布成功！');
-                
-                setTimeout(() => {
-                    NavigationManager.navigateTo('taskList.html');
-                }, 1500);
-            } catch (error) {
-                MessageSystem.error(error.message || '发布任务失败');
-            } finally {
-                // 恢复按钮状态
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发布任务';
+                    // 显示下一步骤
+                    document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.add('active');
+                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+
+                    // 更新按钮状态
+                    updateNavigationButtons();
+
+                    // 如果是最后一步，生成预览
+                    if (currentStep === totalSteps) {
+                        generatePreview();
+                    }
+                }
             }
         }
 
-        /**
-         * 验证任务数据
-         */
-        function validateTask(task) {
-            FormValidator.validateRequired(task.title, '任务标题');
-            FormValidator.validateLength(task.title, 5, 50, '任务标题');
-            
-            FormValidator.validateRequired(task.description, '任务描述');
-            FormValidator.validateLength(task.description, 20, 500, '任务描述');
-            
-            FormValidator.validateNumber(task.reward, '悬赏金额', 0.01);
-            
-            FormValidator.validateRequired(task.deadline, '截止日期');
+        // 上一步
+        function previousStep() {
+            if (currentStep > 1) {
+                // 隐藏当前步骤
+                document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.remove('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
 
-            const deadlineDate = new Date(task.deadline);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+                currentStep--;
+
+                // 显示上一步骤
+                document.querySelector(`.step-content[data-step="${currentStep}"]`).classList.add('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('completed');
+
+                // 更新按钮状态
+                updateNavigationButtons();
+            }
+        }
+
+        // 更新导航按钮状态
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            // 上一步按钮
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'inline-flex';
+            }
+
+            // 下一步按钮
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'inline-flex';
+            }
+        }
+
+        // 验证当前步骤
+        function validateCurrentStep() {
+            const currentStepContent = document.querySelector(`.step-content[data-step="${currentStep}"]`);
+            const requiredFields = currentStepContent.querySelectorAll('[required]');
             
-            if (deadlineDate < today) {
-                throw new Error('截止日期不能早于今天');
+            for (const field of requiredFields) {
+                if (!field.value.trim()) {
+                    field.focus();
+                    showMessage('请填写所有必填字段', 'error');
+                    return false;
+                }
+            }
+
+            // 特殊验证
+            if (currentStep === 1) {
+                const title = document.getElementById('taskTitle').value;
+                if (title.length < 10) {
+                    showMessage('任务标题至少需要10个字符', 'error');
+                    return false;
+                }
+            }
+
+                         if (currentStep === 3) {
+                 const reward = parseFloat(document.getElementById('reward').value);
+                 if (reward < 1) {
+                     showMessage('预算必须大于0', 'error');
+                     return false;
+                 }
+                
+                const deadline = new Date(document.getElementById('deadline').value);
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                if (deadline < tomorrow) {
+                    showMessage('截止日期不能早于明天', 'error');
+                    return false;
+                }
             }
 
             return true;
         }
 
-        // 添加CSS动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
+        // 生成任务预览
+        function generatePreview() {
+            const formData = new FormData(document.getElementById('publishForm'));
+            const previewContainer = document.getElementById('taskPreview');
+
+                         const title = formData.get('title');
+             const category = formData.get('category');
+             const description = formData.get('description');
+             const reward = formData.get('reward');
+             const deadline = formData.get('deadline');
+             const priority = formData.get('priority');
+             const paymentType = formData.get('payment_type');
+
+            const priorityText = {
+                'low': '普通',
+                'medium': '加急',
+                'high': '紧急'
+            };
+
+            const paymentText = {
+                'fixed': '固定价格',
+                'milestone': '里程碑付款'
+            };
+
+            previewContainer.innerHTML = `
+                <div class="preview-card">
+                    <h4>${title}</h4>
+                    <div class="preview-meta">
+                        <span class="badge badge-primary">${category}</span>
+                        <span class="preview-priority priority-${priority}">${priorityText[priority]}</span>
+                    </div>
+                    <p class="preview-description">${description}</p>
+                    <div class="preview-details">
+                                                 <div class="preview-item">
+                             <strong>预算：</strong>￥${reward}
+                         </div>
+                        <div class="preview-item">
+                            <strong>截止日期：</strong>${new Date(deadline).toLocaleDateString('zh-CN')}
+                        </div>
+                        <div class="preview-item">
+                            <strong>付款方式：</strong>${paymentText[paymentType]}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+                                          // 保存草稿
+         async function saveDraft() {
+             try {
+                 // 手动构建任务数据，只包含后端期望的字段
+                 const taskData = {
+                     title: document.getElementById('taskTitle').value.trim(),
+                     description: document.getElementById('taskDescription').value.trim(),
+                     reward: parseFloat(document.getElementById('reward').value) || 0,
+                     min_level: 1
+                 };
+
+                 // 验证必填字段
+                 if (!taskData.title || !taskData.description) {
+                     showMessage('请填写任务标题和描述', 'error');
+                     return;
+                 }
+
+                 await makeRequest('/tasks', 'POST', taskData, true);
+                 showMessage('草稿保存成功', 'success');
+             } catch (error) {
+                 console.error('保存草稿失败:', error);
+                 showMessage(`保存失败: ${error.message}`, 'error');
+             }
+         }
+
+        // 处理表单提交
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            if (!document.getElementById('agreeTerms').checked) {
+                showMessage('请先同意服务条款和隐私政策', 'error');
+                return;
             }
-        `;
-        document.head.appendChild(style);
+
+            try {
+                // 检查用户登录状态
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                if (!token) {
+                    showMessage('请先登录', 'error');
+                    setTimeout(() => {
+                        window.location.href = 'auth.html';
+                    }, 1500);
+                    return;
+                }
+
+                // 手动构建任务数据，只包含后端期望的字段
+                const taskData = {
+                    title: document.getElementById('taskTitle').value.trim(),
+                    description: document.getElementById('taskDescription').value.trim(),
+                    reward: parseFloat(document.getElementById('reward').value),
+                    min_level: 1 // 设置默认最低等级
+                };
+
+                // 验证必填字段
+                if (!taskData.title || !taskData.description || !taskData.reward) {
+                    showMessage('请填写所有必填字段', 'error');
+                    return;
+                }
+
+                if (taskData.reward <= 0) {
+                    showMessage('悬赏金额必须大于0', 'error');
+                    return;
+                }
+
+                console.log('发送任务数据:', taskData);
+
+                // 使用正确的API调用方式
+                const result = await makeRequest('/tasks', 'POST', taskData, true);
+                console.log('API响应:', result);
+                
+                showMessage('任务发布成功！', 'success');
+                setTimeout(() => {
+                    window.location.href = 'taskList.html';
+                }, 1500);
+            } catch (error) {
+                console.error('发布任务失败:', error);
+                showMessage(`发布失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 显示消息
+        function showMessage(message, type = 'info') {
+            // 创建消息元素
+            const messageEl = document.createElement('div');
+            messageEl.className = `alert alert-${type}`;
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                max-width: 400px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            messageEl.textContent = message;
+
+            document.body.appendChild(messageEl);
+
+            // 显示动画
+            setTimeout(() => {
+                messageEl.style.opacity = '1';
+                messageEl.style.transform = 'translateX(0)';
+            }, 100);
+
+            // 自动移除
+            setTimeout(() => {
+                messageEl.style.opacity = '0';
+                messageEl.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.parentNode.removeChild(messageEl);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+                 // 更新导航栏显示
+         function updateNavbar() {
+             const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+             const userData = getUserData();
+             const loginBtn = document.getElementById('login-btn');
+             const userMenu = document.getElementById('user-menu');
+             const usernameSpan = document.getElementById('username');
+
+             if (token && userData) {
+                 loginBtn.style.display = 'none';
+                 userMenu.style.display = 'block';
+                 usernameSpan.textContent = userData.username || '用户';
+                 bindUserMenuEvents();
+             } else {
+                 loginBtn.style.display = 'block';
+                 userMenu.style.display = 'none';
+             }
+         }
+
+         // 绑定用户菜单事件
+         function bindUserMenuEvents() {
+             const userInfoBtn = document.getElementById('userInfoBtn');
+             const userDropdown = document.getElementById('userDropdown');
+             const logoutBtn = document.getElementById('logoutBtn');
+
+             userInfoBtn.addEventListener('click', function(e) {
+                 e.stopPropagation();
+                 userDropdown.classList.toggle('show');
+             });
+
+             document.addEventListener('click', function() {
+                 userDropdown.classList.remove('show');
+             });
+
+             logoutBtn.addEventListener('click', function() {
+                 if (confirm('确定要退出登录吗？')) {
+                     ['token', 'authToken', 'userData', 'username', 'userId'].forEach(key => {
+                         localStorage.removeItem(key);
+                     });
+                     window.location.reload();
+                 }
+             });
+         }
+
+         // 获取用户数据
+         function getUserData() {
+             try {
+                 const userData = localStorage.getItem('userData');
+                 if (userData) {
+                     return JSON.parse(userData);
+                 }
+                 const username = localStorage.getItem('username');
+                 if (username) {
+                     return { username: username };
+                 }
+                 return null;
+             } catch (e) {
+                 console.warn('解析用户数据失败:', e);
+                 return null;
+             }
+         }
+
+         // 获取当前用户信息
+         function getCurrentUser() {
+             return getUserData() || {};
+         }
     </script>
 </body>
 </html>

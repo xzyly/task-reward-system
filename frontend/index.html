@@ -6,581 +6,810 @@
     <title>任务悬赏平台 - 让技能与需求完美匹配</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 - Freelancer风格 -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-briefcase"></i>
+                TaskHub
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="index.html" class="nav-link active">首页</a></li>
+                <li><a href="taskList.html" class="nav-link">任务大厅</a></li>
+                <li><a href="publishTask.html" class="nav-link">发布任务</a></li>
+                <li><a href="myself.html" class="nav-link">个人中心</a></li>
+                <!-- 未登录状态 -->
+                <li id="login-btn" style="display: none;"><a href="auth.html" class="nav-link btn btn-primary">登录/注册</a></li>
+                <!-- 已登录状态 -->
+                <li id="user-menu" class="user-menu" style="display: none;">
+                    <div class="user-dropdown">
+                        <button class="user-info-btn" id="userInfoBtn">
+                            <i class="fas fa-user"></i>
+                            <span id="username">用户名</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="myself.html" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人中心
+                            </a>
+                            <a href="publishTask.html" class="dropdown-item">
+                                <i class="fas fa-plus"></i>
+                                发布任务
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </button>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <!-- 首页横幅区域 -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <div class="hero-content fade-in">
+                            <h1 class="hero-title">
+                                连接技能与需求<br>
+                                <span class="text-primary">让才华闪耀价值</span>
+                            </h1>
+                            <p class="hero-subtitle">
+                                专业的任务悬赏平台，汇聚全球优秀人才，为您的项目找到最合适的解决方案。
+                                无论是技术开发、创意设计，还是专业咨询，我们都能满足您的需求。
+                            </p>
+                            <div class="hero-actions">
+                                <a href="taskList.html" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search"></i>
+                                    浏览任务
+                                </a>
+                                <a href="publishTask.html" class="btn btn-outline-primary btn-lg">
+                                    <i class="fas fa-plus"></i>
+                                    发布任务
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="hero-image fade-in">
+                            <div class="hero-illustration">
+                                <i class="fas fa-users-cog"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特色功能区域 -->
+        <section class="features-section section">
+            <div class="container">
+                <h2 class="section-title">为什么选择我们</h2>
+                <p class="section-subtitle">
+                    专业、高效、安全的任务悬赏平台，为您提供全方位的服务体验
+                </p>
+                <div class="row">
+                    <div class="col-4">
+                        <div class="feature-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h3 class="card-title">安全保障</h3>
+                                <p class="card-text">
+                                    多重身份验证、资金托管保护、完善的争议解决机制，确保交易安全可靠
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="feature-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="feature-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <h3 class="card-title">高效匹配</h3>
+                                <p class="card-text">
+                                    智能推荐算法，快速匹配合适的人才和项目，大幅提升工作效率
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="feature-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="feature-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h3 class="card-title">品质保证</h3>
+                                <p class="card-text">
+                                    严格的服务商筛选机制、完善的评价体系，确保服务质量始终如一
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 热门分类区域 -->
+        <section class="categories-section section" style="background: var(--bg-secondary);">
+            <div class="container">
+                <h2 class="section-title">热门任务分类</h2>
+                <p class="section-subtitle">
+                    覆盖各行各业，总有一个适合您
+                </p>
+                <div class="row">
+                    <div class="col-3">
+                        <div class="category-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="category-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <h4 class="card-title">技术开发</h4>
+                                <p class="card-text">网站开发、APP制作、系统集成</p>
+                                <span class="badge badge-primary">1,234个任务</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="category-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="category-icon">
+                                    <i class="fas fa-paint-brush"></i>
+                                </div>
+                                <h4 class="card-title">创意设计</h4>
+                                <p class="card-text">平面设计、UI/UX、品牌策划</p>
+                                <span class="badge badge-primary">892个任务</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="category-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="category-icon">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <h4 class="card-title">市场营销</h4>
+                                <p class="card-text">内容创作、社媒运营、SEO优化</p>
+                                <span class="badge badge-primary">567个任务</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="category-card card hover-lift">
+                            <div class="card-body text-center">
+                                <div class="category-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <h4 class="card-title">商务咨询</h4>
+                                <p class="card-text">财务规划、法律咨询、管理顾问</p>
+                                <span class="badge badge-primary">345个任务</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-5">
+                    <a href="taskList.html" class="btn btn-outline-primary">
+                        查看更多分类
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最新任务区域 -->
+        <section class="latest-tasks-section section">
+            <div class="container">
+                <h2 class="section-title">最新发布</h2>
+                <p class="section-subtitle">
+                    实时更新的任务机会，抓住每一个商机
+                </p>
+                <div class="row" id="latest-tasks">
+                    <!-- 动态加载的任务列表 -->
+                </div>
+                <div class="text-center mt-5">
+                    <a href="taskList.html" class="btn btn-primary">
+                        查看全部任务
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计数据区域 -->
+        <section class="stats-section section" style="background: var(--bg-secondary);">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-primary">10,000+</div>
+                            <div class="stat-label">注册用户</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-success">5,000+</div>
+                            <div class="stat-label">完成任务</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-warning">￥500万+</div>
+                            <div class="stat-label">交易金额</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="stat-item">
+                            <div class="stat-number text-primary">98%</div>
+                            <div class="stat-label">好评率</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA区域 -->
+        <section class="cta-section section">
+            <div class="container">
+                <div class="cta-card card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">准备开始您的项目了吗？</h2>
+                        <p class="card-text">
+                            加入我们的平台，与全球优秀人才连接，让您的想法变成现实
+                        </p>
+                        <div class="cta-actions">
+                            <a href="auth.html" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus"></i>
+                                立即注册
+                            </a>
+                            <a href="publishTask.html" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-plus"></i>
+                                发布第一个任务
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer" style="background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%); color: var(--text-white); padding: var(--spacing-3xl) 0; border-top: 1px solid var(--border-light);">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h5 class="fw-bold mb-3" style="color: var(--primary);">
+                        <i class="fas fa-briefcase"></i>
+                        TaskHub
+                    </h5>
+                    <p style="color: var(--text-secondary);">
+                        专业的任务悬赏平台，连接全球人才与项目需求。
+                    </p>
+                </div>
+                <div class="col-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--text-primary);">快速链接</h6>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: var(--spacing-sm);"><a href="taskList.html" style="color: var(--text-secondary); text-decoration: none; transition: var(--transition-normal);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">任务大厅</a></li>
+                        <li style="margin-bottom: var(--spacing-sm);"><a href="publishTask.html" style="color: var(--text-secondary); text-decoration: none; transition: var(--transition-normal);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">发布任务</a></li>
+                        <li style="margin-bottom: var(--spacing-sm);"><a href="auth.html" style="color: var(--text-secondary); text-decoration: none; transition: var(--transition-normal);" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">注册登录</a></li>
+                    </ul>
+                </div>
+                <div class="col-4">
+                    <h6 class="fw-bold mb-3" style="color: var(--text-primary);">联系我们</h6>
+                    <p style="color: var(--text-secondary);">
+                        <i class="fas fa-envelope" style="color: var(--primary);"></i> support@taskhub.com<br>
+                        <i class="fas fa-phone" style="color: var(--primary);"></i> 400-123-4567
+                    </p>
+                </div>
+            </div>
+            <hr style="border-color: var(--border-light); margin: var(--spacing-xl) 0;">
+            <div class="text-center" style="color: var(--text-muted);">
+                <p>&copy; 2024 TaskHub. 保留所有权利。</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 自定义样式 -->
     <style>
-        /* 全局样式 */
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --success: #00b894;
-            --warning: #fdcb6e;
-            --danger: #ff7675;
-            --dark: #1a1a2e;
-            --light: #f8f9fa;
-            --accent: #a29bfe;
+        /* 用户下拉菜单样式 */
+        .user-menu {
+            position: relative;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .user-dropdown {
+            position: relative;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--dark) 0%, #16213e 100%);
-            color: #e0e6ed;
-            line-height: 1.6;
+        .user-info-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: transparent;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-button);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-normal);
+            font-size: var(--font-size-sm);
         }
 
-        /* 导航栏样式 */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .user-info-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
             right: 0;
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
+            margin-top: var(--spacing-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition-normal);
             z-index: 1000;
-            transition: all 0.3s ease;
         }
 
-        .navbar.scrolled {
-            background: rgba(26, 26, 46, 0.98);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        /* 英雄区域样式 */
-        .hero {
-            min-height: 100vh;
+        .dropdown-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 100px 20px 50px;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            font-size: var(--font-size-sm);
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-hover);
+            color: var(--primary);
+        }
+
+        .dropdown-item:first-child {
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-light);
+            margin: var(--spacing-xs) 0;
+        }
+
+        /* 首页特定样式 - 深色主题 */
+        .hero-section {
+            padding: var(--spacing-4xl) 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
             position: relative;
             overflow: hidden;
         }
 
-        .hero::before {
+        .hero-section::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23667eea" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            opacity: 0.3;
+            background: radial-gradient(circle at 30% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+            pointer-events: none;
         }
 
-        .hero-content {
-            max-width: 800px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+        .hero-title {
+            font-size: var(--font-size-4xl);
+            font-weight: var(--font-weight-bold);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 70%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: fadeInUp 1s ease-out;
+            background-clip: text;
+            margin-bottom: var(--spacing-lg);
+            line-height: var(--line-height-tight);
+            position: relative;
+            z-index: 2;
         }
 
         .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            color: #b8c6db;
-            animation: fadeInUp 1s ease-out 0.2s both;
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-2xl);
+            line-height: var(--line-height-relaxed);
+            position: relative;
+            z-index: 2;
         }
 
-        .hero-description {
-            font-size: 1.1rem;
-            margin-bottom: 40px;
-            color: #a0a9ba;
-            animation: fadeInUp 1s ease-out 0.4s both;
-        }
-
-        .hero-buttons {
+        .hero-actions {
             display: flex;
-            gap: 20px;
-            justify-content: center;
+            gap: var(--spacing-lg);
             flex-wrap: wrap;
-            animation: fadeInUp 1s ease-out 0.6s both;
+            position: relative;
+            z-index: 2;
         }
 
-        /* 按钮样式 */
-        .btn {
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
+        .hero-illustration {
+            display: flex;
             align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--light);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .btn-small {
-            padding: 10px 20px;
-            font-size: 0.9rem;
-        }
-
-        /* 特性区域样式 */
-        .features {
-            padding: 80px 20px;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .features-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .features-subtitle {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #b8c6db;
-            margin-bottom: 50px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .feature-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary);
+            justify-content: center;
+            height: 400px;
+            font-size: 200px;
+            color: var(--primary);
+            opacity: 0.3;
+            text-shadow: var(--glow-primary);
+            position: relative;
+            z-index: 1;
         }
 
         .feature-icon {
             width: 80px;
             height: 80px;
+            margin: 0 auto var(--spacing-lg);
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
+            border-radius: var(--radius-full);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2rem;
-            color: white;
+            font-size: var(--font-size-2xl);
+            color: var(--text-white);
+            box-shadow: var(--glow-primary);
+            transition: var(--transition-normal);
         }
 
-        .feature-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: var(--light);
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg), var(--glow-primary);
         }
 
-        .feature-description {
-            color: #b8c6db;
-            line-height: 1.6;
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto var(--spacing-lg);
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-hover));
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            color: var(--primary);
+            transition: var(--transition-normal);
         }
 
-        /* 统计区域样式 */
-        .stats {
-            padding: 60px 20px;
+        .category-card:hover .category-icon {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-white);
+            box-shadow: var(--glow-primary);
         }
 
-        .stats-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            text-align: center;
+        .stat-number {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .stat-item h3 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: white;
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: var(--font-weight-medium);
         }
 
-        .stat-item p {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.9);
+        .cta-actions {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: var(--spacing-xl);
         }
 
-        /* 页脚样式 */
-        .footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 40px 20px;
-            text-align: center;
+        /* 任务卡片样式 */
+        .task-card {
+            margin-bottom: var(--spacing-xl);
         }
 
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .footer p {
-            color: #b8c6db;
-            margin-bottom: 10px;
+        .task-price {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--success);
         }
 
-        /* 动画 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .task-deadline {
+            color: var(--text-muted);
+            font-size: var(--font-size-sm);
         }
 
-        /* 响应式设计 */
+        /* 响应式调整 */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .hero-title {
+                font-size: var(--font-size-2xl);
             }
 
-            .hero-subtitle {
-                font-size: 1.1rem;
+            .hero-actions {
+                justify-content: center;
             }
 
-            .hero-buttons {
+            .hero-illustration {
+                height: 200px;
+                font-size: 100px;
+            }
+
+            .feature-icon,
+            .category-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .stat-number {
+                font-size: var(--font-size-xl);
+            }
+
+            .cta-actions {
                 flex-direction: column;
                 align-items: center;
             }
-
-            .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .nav-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
-</head>
-<body>
-    <!-- 导航栏 -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-coins"></i> 任务悬赏平台
-            </div>
-            <div class="nav-buttons">
-                <a href="auth.html" class="btn btn-outline btn-small">
-                    <i class="fas fa-sign-in-alt"></i> 登录/注册
-                </a>
-                <a href="taskList.html" class="btn btn-primary btn-small">
-                    <i class="fas fa-list"></i> 浏览任务
-                </a>
-            </div>
-        </div>
-    </nav>
 
-    <!-- 英雄区域 -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1><i class="fas fa-rocket"></i> 任务悬赏平台</h1>
-            <p class="hero-subtitle">连接技能与需求，创造价值与机会</p>
-            <p class="hero-description">
-                这里是一个专业的任务悬赏平台，发布者可以发布各种任务需求，接单者可以展示自己的技能并获得报酬。
-                无论你是需要帮助完成项目，还是想要通过技能赚取收入，这里都是你的理想选择。
-            </p>
-            <div class="hero-buttons">
-                <a href="taskList.html" class="btn btn-primary">
-                    <i class="fas fa-search"></i> 立即浏览任务
-                </a>
-                <a href="auth.html" class="btn btn-outline">
-                    <i class="fas fa-user-plus"></i> 免费注册
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 特性区域 -->
-    <section class="features">
-        <div class="features-container">
-            <h2>平台特色</h2>
-            <p class="features-subtitle">为什么选择我们的任务悬赏平台？</p>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 class="feature-title">安全可靠</h3>
-                    <p class="feature-description">
-                        完善的用户认证体系，保障交易安全，让每一次合作都有保障。
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-lightning-bolt"></i>
-                    </div>
-                    <h3 class="feature-title">快速匹配</h3>
-                    <p class="feature-description">
-                        智能分类系统，快速找到合适的任务或接单者，提高工作效率。
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <h3 class="feature-title">透明定价</h3>
-                    <p class="feature-description">
-                        公开透明的悬赏金额，让每个人都能获得应有的价值回报。
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3 class="feature-title">多元化技能</h3>
-                    <p class="feature-description">
-                        涵盖设计、开发、写作、翻译等多个领域，满足不同需求。
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3 class="feature-title">等级体系</h3>
-                    <p class="feature-description">
-                        完善的用户等级体系，帮助建立信任，提升合作质量。
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3 class="feature-title">灵活时间</h3>
-                    <p class="feature-description">
-                        自由选择工作时间和项目周期，实现工作与生活的平衡。
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 统计区域 -->
-    <section class="stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <h3 id="taskCount">0</h3>
-                <p>发布任务数</p>
-            </div>
-            <div class="stat-item">
-                <h3 id="userCount">0</h3>
-                <p>注册用户数</p>
-            </div>
-            <div class="stat-item">
-                <h3 id="completedCount">0</h3>
-                <p>完成任务数</p>
-            </div>
-            <div class="stat-item">
-                <h3 id="totalReward">0</h3>
-                <p>累计悬赏金额</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 页脚 -->
-    <footer class="footer">
-        <div class="footer-container">
-            <p>&copy; 2024 任务悬赏平台. 让技能与需求完美匹配</p>
-            <p>联系我们: support@taskplatform.com | 服务热线: 400-888-8888</p>
-        </div>
-    </footer>
-
-    <script type="module">
-        import { taskAPI, userAPI } from './js/api.js';
-        import { AuthManager } from './js/utils.js';
-
-        // 页面加载完成后初始化
-        document.addEventListener('DOMContentLoaded', async () => {
-            // 导航栏滚动效果
-            window.addEventListener('scroll', () => {
-                const navbar = document.getElementById('navbar');
-                if (window.scrollY > 50) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
-
-            // 加载统计数据
-            await loadStatistics();
-
-            // 数字滚动动画
-            animateNumbers();
+    <!-- JavaScript -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
         });
 
-        /**
-         * 加载统计数据
-         */
-        async function loadStatistics() {
-            try {
-                // 获取任务统计
-                const tasks = await taskAPI.getAllTasks();
-                const totalTasks = tasks.length;
-                const completedTasks = tasks.filter(task => task.status === 'COMPLETED').length;
-                const totalReward = tasks.reduce((sum, task) => sum + (task.reward || 0), 0);
+        // API调用函数
+        async function makeRequest(endpoint, method = 'GET', body = null, auth = true) {
+            const API_BASE_URL = 'http://localhost:3000/api';
+            const headers = {
+                'Content-Type': 'application/json'
+            };
 
-                // 模拟用户数据（实际项目中应该有专门的API）
-                const estimatedUsers = Math.max(10, Math.floor(totalTasks * 1.5));
-
-                // 更新统计数据
-                updateStatistic('taskCount', totalTasks);
-                updateStatistic('userCount', estimatedUsers);
-                updateStatistic('completedCount', completedTasks);
-                updateStatistic('totalReward', `¥${totalReward.toLocaleString()}`);
-            } catch (error) {
-                console.error('加载统计数据失败:', error);
-                // 显示默认数据
-                updateStatistic('taskCount', '50+');
-                updateStatistic('userCount', '100+');
-                updateStatistic('completedCount', '30+');
-                updateStatistic('totalReward', '¥10,000+');
-            }
-        }
-
-        /**
-         * 更新统计数据
-         */
-        function updateStatistic(elementId, value) {
-            const element = document.getElementById(elementId);
-            if (element) {
-                element.textContent = value;
-            }
-        }
-
-        /**
-         * 数字滚动动画
-         */
-        function animateNumbers() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const statsItems = document.querySelectorAll('.stat-item h3');
-                        statsItems.forEach(item => {
-                            const finalValue = item.textContent;
-                            if (!isNaN(finalValue)) {
-                                animateNumber(item, 0, parseInt(finalValue), 2000);
-                            }
-                        });
-                        observer.unobserve(entry.target);
-                    }
-                });
-            });
-
-            const statsSection = document.querySelector('.stats');
-            if (statsSection) {
-                observer.observe(statsSection);
-            }
-        }
-
-        /**
-         * 数字动画函数
-         */
-        function animateNumber(element, start, end, duration) {
-            const startTime = performance.now();
-            
-            function updateNumber(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                const currentValue = Math.floor(start + (end - start) * progress);
-                element.textContent = currentValue;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(updateNumber);
+            if (auth) {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                } else if (auth) {
+                    // 如果需要认证但没有token，跳转到登录页
+                    window.location.href = 'auth.html';
+                    return;
                 }
             }
+
+            const config = {
+                method,
+                headers
+            };
+
+            if (body) {
+                config.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                if (!response.ok) {
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (e) {
+                        errorData = { error: `请求失败: ${response.status} ${response.statusText}` };
+                    }
+                    throw new Error(errorData.error || '请求失败');
+                }
+
+                const contentLength = response.headers.get('content-length');
+                if (contentLength === '0' || !contentLength) {
+                    return null;
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API请求错误:', error);
+                throw error;
+            }
+        }
+
+        // 加载最新任务
+        async function loadLatestTasks() {
+            try {
+                const tasks = await makeRequest('/tasks', 'GET', null, false);
+                if (tasks && tasks.length > 0) {
+                    const tasksContainer = document.getElementById('latest-tasks');
+                    const latestTasks = tasks.slice(0, 6); // 只显示最新6个任务
+                    
+                    tasksContainer.innerHTML = latestTasks.map(task => `
+                        <div class="col-4">
+                            <div class="task-card card hover-lift">
+                                <div class="card-body">
+                                    <div class="task-meta">
+                                        <span class="badge badge-primary">${task.category || '其他'}</span>
+                                        <span class="task-deadline">
+                                            <i class="fas fa-clock"></i>
+                                            ${formatDate(task.deadline)}
+                                        </span>
+                                    </div>
+                                    <h5 class="card-title">
+                                        <a href="detail.html?id=${task.id}" style="text-decoration: none; color: inherit;">
+                                            ${task.title}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text">${truncateText(task.description, 100)}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="task-price">￥${task.reward || task.budget || 0}</div>
+                                        <a href="detail.html?id=${task.id}" class="btn btn-outline-primary btn-sm">
+                                            查看详情
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('latest-tasks').innerHTML = `
+                        <div class="col-12 text-center">
+                            <p class="text-muted">暂无最新任务</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('加载任务失败:', error);
+                document.getElementById('latest-tasks').innerHTML = `
+                    <div class="col-12 text-center">
+                        <p class="text-danger">任务加载失败，请稍后重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查登录状态并更新导航栏
+            updateNavbar();
             
-            requestAnimationFrame(updateNumber);
+            loadLatestTasks();
+            
+            // 添加进入动画
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                });
+            }, 100);
+        });
+
+        // 更新导航栏显示
+        function updateNavbar() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            const userData = getUserData();
+            const loginBtn = document.getElementById('login-btn');
+            const userMenu = document.getElementById('user-menu');
+            const usernameSpan = document.getElementById('username');
+
+            if (token && userData) {
+                // 已登录状态
+                loginBtn.style.display = 'none';
+                userMenu.style.display = 'block';
+                usernameSpan.textContent = userData.username || '用户';
+                
+                // 绑定下拉菜单事件
+                bindUserMenuEvents();
+            } else {
+                // 未登录状态
+                loginBtn.style.display = 'block';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        // 绑定用户菜单事件
+        function bindUserMenuEvents() {
+            const userInfoBtn = document.getElementById('userInfoBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            // 点击用户信息按钮切换下拉菜单
+            userInfoBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+
+            // 点击页面其他地方关闭下拉菜单
+            document.addEventListener('click', function() {
+                userDropdown.classList.remove('show');
+            });
+
+            // 退出登录
+            logoutBtn.addEventListener('click', function() {
+                if (confirm('确定要退出登录吗？')) {
+                    // 清除所有登录信息
+                    ['token', 'authToken', 'userData', 'username', 'userId'].forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    // 刷新页面
+                    window.location.reload();
+                }
+            });
+        }
+
+        // 获取用户数据
+        function getUserData() {
+            try {
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    return JSON.parse(userData);
+                }
+                
+                // 如果没有完整用户数据，尝试从其他字段获取
+                const username = localStorage.getItem('username');
+                if (username) {
+                    return { username: username };
+                }
+                
+                return null;
+            } catch (e) {
+                console.warn('解析用户数据失败:', e);
+                return null;
+            }
+        }
+
+        // 工具函数
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = date - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) return '已截止';
+            if (diffDays === 0) return '今天截止';
+            if (diffDays === 1) return '明天截止';
+            return `${diffDays}天后截止`;
+        }
+
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
         }
     </script>
 </body>

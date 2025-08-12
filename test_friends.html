@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友功能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #0d1117; color: #f0f6fc; }
+        .section { margin: 20px 0; padding: 15px; background: #1e293b; border-radius: 8px; }
+        button { padding: 8px 16px; margin: 5px; background: #58a6ff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #79c0ff; }
+        input { padding: 8px; margin: 5px; background: #374151; color: #f0f6fc; border: 1px solid #555; border-radius: 4px; }
+        .result { margin: 10px 0; padding: 10px; background: #0f172a; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>好友功能测试页面</h1>
+    
+    <div class="section">
+        <h3>用户认证</h3>
+        <input type="text" id="username" placeholder="用户名">
+        <input type="password" id="password" placeholder="密码">
+        <button onclick="login()">登录</button>
+        <button onclick="register()">注册</button>
+        <div id="authResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h3>搜索用户</h3>
+        <input type="text" id="searchQuery" placeholder="搜索用户名">
+        <button onclick="searchUsers()">搜索</button>
+        <div id="searchResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h3>好友操作</h3>
+        <button onclick="getFriends()">获取好友列表</button>
+        <button onclick="getFriendRequests()">获取好友申请</button>
+        <div id="friendResult" class="result"></div>
+    </div>
+
+    <div class="section">
+        <h3>消息测试</h3>
+        <input type="number" id="receiverId" placeholder="接收者ID">
+        <input type="text" id="messageContent" placeholder="消息内容">
+        <button onclick="sendMessage()">发送消息</button>
+        <button onclick="getConversations()">获取会话列表</button>
+        <div id="messageResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let authToken = '';
+
+        async function apiRequest(endpoint, method = 'GET', body = null) {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            const config = { method, headers };
+            if (body) {
+                config.body = JSON.stringify(body);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, config);
+                const data = await response.json();
+                return { ok: response.ok, data };
+            } catch (error) {
+                return { ok: false, error: error.message };
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const result = await apiRequest('/login', 'POST', { username, password });
+            
+            if (result.ok) {
+                authToken = result.data.token;
+                document.getElementById('authResult').innerHTML = `
+                    <strong>登录成功!</strong><br>
+                    用户: ${result.data.user.username}<br>
+                    Token: ${authToken.substring(0, 20)}...
+                `;
+            } else {
+                document.getElementById('authResult').innerHTML = `<strong>登录失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const result = await apiRequest('/register', 'POST', { username, password });
+            
+            if (result.ok) {
+                document.getElementById('authResult').innerHTML = `<strong>注册成功!</strong> 用户: ${result.data.user.username}`;
+            } else {
+                document.getElementById('authResult').innerHTML = `<strong>注册失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function searchUsers() {
+            const query = document.getElementById('searchQuery').value;
+            const result = await apiRequest(`/friends/search?username=${encodeURIComponent(query)}`);
+            
+            if (result.ok) {
+                const users = result.data.users;
+                document.getElementById('searchResult').innerHTML = `
+                    <strong>搜索结果:</strong><br>
+                    ${users.map(user => `
+                        ID: ${user.id}, 用户名: ${user.username}, 等级: ${user.level}, 状态: ${user.friendshipStatus}
+                        <button onclick="sendFriendRequest(${user.id})">添加好友</button>
+                    `).join('<br>')}
+                `;
+            } else {
+                document.getElementById('searchResult').innerHTML = `<strong>搜索失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function sendFriendRequest(friendId) {
+            const result = await apiRequest('/friends/request', 'POST', { friendId });
+            
+            if (result.ok) {
+                alert('好友申请发送成功!');
+                searchUsers(); // 刷新搜索结果
+            } else {
+                alert('发送失败: ' + (result.data?.error || result.error));
+            }
+        }
+
+        async function getFriends() {
+            const result = await apiRequest('/friends/list');
+            
+            if (result.ok) {
+                const friends = result.data.friends;
+                document.getElementById('friendResult').innerHTML = `
+                    <strong>好友列表:</strong><br>
+                    ${friends.map(friend => `
+                        ID: ${friend.id}, 用户名: ${friend.username}, 等级: ${friend.level}
+                        <button onclick="removeFriend(${friend.id})">删除好友</button>
+                    `).join('<br>')}
+                `;
+            } else {
+                document.getElementById('friendResult').innerHTML = `<strong>获取失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function getFriendRequests() {
+            const result = await apiRequest('/friends/requests');
+            
+            if (result.ok) {
+                const requests = result.data.requests;
+                document.getElementById('friendResult').innerHTML = `
+                    <strong>好友申请:</strong><br>
+                    ${requests.map(req => `
+                        来自: ${req.username} (ID: ${req.user_id})
+                        <button onclick="respondToRequest(${req.id}, 'accept')">接受</button>
+                        <button onclick="respondToRequest(${req.id}, 'reject')">拒绝</button>
+                    `).join('<br>')}
+                `;
+            } else {
+                document.getElementById('friendResult').innerHTML = `<strong>获取失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function respondToRequest(requestId, action) {
+            const result = await apiRequest('/friends/respond', 'POST', { requestId, action });
+            
+            if (result.ok) {
+                alert(`已${action === 'accept' ? '接受' : '拒绝'}好友申请!`);
+                getFriendRequests(); // 刷新申请列表
+            } else {
+                alert('操作失败: ' + (result.data?.error || result.error));
+            }
+        }
+
+        async function removeFriend(friendId) {
+            if (confirm('确定要删除这个好友吗？')) {
+                const result = await apiRequest('/friends/remove', 'POST', { friendId });
+                
+                if (result.ok) {
+                    alert('好友删除成功!');
+                    getFriends(); // 刷新好友列表
+                } else {
+                    alert('删除失败: ' + (result.data?.error || result.error));
+                }
+            }
+        }
+
+        async function sendMessage() {
+            const receiverId = parseInt(document.getElementById('receiverId').value);
+            const content = document.getElementById('messageContent').value;
+            
+            const result = await apiRequest('/messages/send', 'POST', { receiverId, content });
+            
+            if (result.ok) {
+                document.getElementById('messageResult').innerHTML = `
+                    <strong>消息发送成功!</strong><br>
+                    消息ID: ${result.data.messageData.id}
+                `;
+                document.getElementById('messageContent').value = '';
+            } else {
+                document.getElementById('messageResult').innerHTML = `<strong>发送失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+
+        async function getConversations() {
+            const result = await apiRequest('/messages/conversations');
+            
+            if (result.ok) {
+                const conversations = result.data.conversations;
+                document.getElementById('messageResult').innerHTML = `
+                    <strong>会话列表:</strong><br>
+                    ${conversations.map(conv => `
+                        好友: ${conv.friend_username} (ID: ${conv.friend_id})<br>
+                        最后消息: ${conv.last_message}<br>
+                        未读: ${conv.unread_count}条
+                    `).join('<br><br>')}
+                `;
+            } else {
+                document.getElementById('messageResult').innerHTML = `<strong>获取失败:</strong> ${result.data?.error || result.error}`;
+            }
+        }
+    </script>
+</body>
+</html>

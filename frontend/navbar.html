@@ -153,6 +153,278 @@
             transform: translateY(-1px);
         }
 
+        /* 好友下拉菜单样式 */
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: 20px;
+            background: #da3633;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-toggle.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            min-width: 350px;
+            max-width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .dropdown-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-section {
+            padding: 16px;
+            border-bottom: 1px solid rgba(240, 246, 252, 0.1);
+        }
+
+        .dropdown-section:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #f0f6fc;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .count-badge {
+            background: #58a6ff;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .dropdown-search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid rgba(240, 246, 252, 0.2);
+            border-radius: 6px;
+            background: rgba(240, 246, 252, 0.05);
+            color: #f0f6fc;
+            font-size: 13px;
+        }
+
+        .dropdown-search-input::placeholder {
+            color: #8b949e;
+        }
+
+        .dropdown-search-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+        }
+
+        .dropdown-search-btn {
+            padding: 8px 12px;
+            background: #58a6ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-search-btn:hover {
+            background: #79c0ff;
+        }
+
+        .search-results-container,
+        .friend-requests-container,
+        .friends-list-container {
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(240, 246, 252, 0.05);
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-avatar-small {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .user-info-small {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name-small {
+            color: #f0f6fc;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-level-small {
+            color: #8b949e;
+            font-size: 11px;
+        }
+
+        .user-action-small {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-btn-small {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-small {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-add-small:hover {
+            background: #2ea043;
+        }
+
+        .btn-accept-small {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-accept-small:hover {
+            background: #2ea043;
+        }
+
+        .btn-reject-small {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-reject-small:hover {
+            background: #c5282f;
+        }
+
+        .btn-chat-small {
+            background: #58a6ff;
+            color: white;
+        }
+
+        .btn-chat-small:hover {
+            background: #79c0ff;
+        }
+
+        .empty-message {
+            color: #8b949e;
+            font-size: 12px;
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .status-text-small {
+            font-size: 11px;
+            color: #8b949e;
+        }
+
+        .dropdown-footer {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(240, 246, 252, 0.1);
+        }
+
+        .dropdown-link-full {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-link-full:hover {
+            background: rgba(88, 166, 255, 0.1);
+            color: #79c0ff;
+        }
+
         /* 移动端响应式 */
         @media (max-width: 768px) {
             .nav-content {
@@ -175,6 +447,12 @@
             .nav-user {
                 order: 0;
             }
+
+            .dropdown-content {
+                min-width: 300px;
+                max-width: 90vw;
+                left: -50px;
+            }
         }
     </style>
 </head>
@@ -193,6 +471,59 @@
                     </a>
                     <a href="publishTask.html" class="nav-link" data-page="publishTask">
                         <i class="fas fa-plus"></i> 发布任务
+                    </a>
+                    <!-- 好友功能下拉菜单 -->
+                    <div class="nav-dropdown" id="friendsDropdown" style="display: none;">
+                        <a href="#" class="nav-link dropdown-toggle" data-page="friends">
+                            <i class="fas fa-users"></i> 好友
+                            <span id="friendRequestBadge" class="notification-badge" style="display: none;"></span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </a>
+                        <div class="dropdown-content" id="friendsDropdownContent">
+                            <!-- 搜索用户 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-search"></i> 搜索用户
+                                </div>
+                                <div class="search-container">
+                                    <input type="text" id="navSearchInput" class="dropdown-search-input" placeholder="输入用户名...">
+                                    <button id="navSearchBtn" class="dropdown-search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <div id="navSearchResults" class="search-results-container"></div>
+                            </div>
+                            
+                            <!-- 好友申请 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-user-plus"></i> 好友申请
+                                    <span id="requestCountBadge" class="count-badge" style="display: none;"></span>
+                                </div>
+                                <div id="navFriendRequests" class="friend-requests-container">
+                                    <div class="empty-message">暂无好友申请</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 我的好友 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-users"></i> 我的好友
+                                </div>
+                                <div id="navFriendsList" class="friends-list-container">
+                                    <div class="empty-message">暂无好友</div>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown-footer">
+                                <a href="friends.html" class="dropdown-link-full">
+                                    <i class="fas fa-external-link-alt"></i> 查看完整好友管理
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="chat.html" class="nav-link" data-page="chat">
+                        <i class="fas fa-comments"></i> 聊天
                     </a>
                     <a href="myself.html" class="nav-link" data-page="myself">
                         <i class="fas fa-user"></i> 个人中心
@@ -228,11 +559,13 @@
         class NavbarManager {
             constructor() {
                 this.init();
+                this.friendsWidget = null;
             }
 
             init() {
                 this.checkAuthStatus();
                 this.setActivePage();
+                this.initializeFriendsWidget();
             }
 
             // 检查登录状态
@@ -294,6 +627,8 @@
                     'index': 'taskList',
                     '': 'taskList',
                     'publishTask': 'publishTask', 
+                    'friends': 'friends',
+                    'chat': 'chat',
                     'myself': 'myself',
                     'detail': 'taskList' // 详情页归属到任务列表
                 };
@@ -312,6 +647,392 @@
                 }
                 
                 this.checkAuthStatus();
+            }
+
+            // 初始化好友功能组件
+            initializeFriendsWidget() {
+                const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                if (token) {
+                    this.friendsWidget = new NavbarFriendsWidget();
+                    this.setupFriendsDropdown();
+                }
+            }
+
+            // 设置好友下拉菜单
+            setupFriendsDropdown() {
+                const friendsDropdown = document.getElementById('friendsDropdown');
+                const dropdownToggle = friendsDropdown.querySelector('.dropdown-toggle');
+                const dropdownContent = document.getElementById('friendsDropdownContent');
+
+                if (friendsDropdown && dropdownToggle && dropdownContent) {
+                    friendsDropdown.style.display = 'block';
+
+                    // 点击切换下拉菜单
+                    dropdownToggle.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.toggleFriendsDropdown();
+                    });
+
+                    // 点击页面其他地方关闭下拉菜单
+                    document.addEventListener('click', (e) => {
+                        if (!friendsDropdown.contains(e.target)) {
+                            this.closeFriendsDropdown();
+                        }
+                    });
+
+                    // 防止下拉菜单内部点击关闭菜单
+                    dropdownContent.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+            }
+
+            // 切换好友下拉菜单
+            toggleFriendsDropdown() {
+                const dropdownToggle = document.querySelector('.dropdown-toggle');
+                const dropdownContent = document.getElementById('friendsDropdownContent');
+                
+                if (dropdownContent.classList.contains('show')) {
+                    this.closeFriendsDropdown();
+                } else {
+                    this.openFriendsDropdown();
+                }
+            }
+
+            // 打开好友下拉菜单
+            openFriendsDropdown() {
+                const dropdownToggle = document.querySelector('.dropdown-toggle');
+                const dropdownContent = document.getElementById('friendsDropdownContent');
+                
+                dropdownToggle.classList.add('active');
+                dropdownContent.classList.add('show');
+                
+                // 加载好友数据
+                if (this.friendsWidget) {
+                    this.friendsWidget.loadAllData();
+                }
+            }
+
+            // 关闭好友下拉菜单
+            closeFriendsDropdown() {
+                const dropdownToggle = document.querySelector('.dropdown-toggle');
+                const dropdownContent = document.getElementById('friendsDropdownContent');
+                
+                if (dropdownToggle) dropdownToggle.classList.remove('active');
+                if (dropdownContent) dropdownContent.classList.remove('show');
+            }
+        }
+
+        // 导航栏好友功能组件
+        class NavbarFriendsWidget {
+            constructor() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // 搜索功能
+                const searchBtn = document.getElementById('navSearchBtn');
+                const searchInput = document.getElementById('navSearchInput');
+                
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', () => this.searchUsers());
+                }
+                
+                if (searchInput) {
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.searchUsers();
+                        }
+                    });
+                }
+            }
+
+            // 加载所有数据
+            async loadAllData() {
+                try {
+                    await Promise.all([
+                        this.loadFriendRequests(),
+                        this.loadFriends()
+                    ]);
+                } catch (error) {
+                    console.error('加载好友数据失败:', error);
+                }
+            }
+
+            // 搜索用户
+            async searchUsers() {
+                const searchInput = document.getElementById('navSearchInput');
+                const resultsContainer = document.getElementById('navSearchResults');
+                const query = searchInput.value.trim();
+
+                if (!query) {
+                    resultsContainer.innerHTML = '<div class="empty-message">请输入用户名</div>';
+                    return;
+                }
+
+                resultsContainer.innerHTML = '<div class="empty-message">搜索中...</div>';
+
+                try {
+                    const response = await this.makeRequest('/friends/search', 'POST', { query });
+                    this.renderSearchResults(response.users || []);
+                } catch (error) {
+                    console.error('搜索用户失败:', error);
+                    resultsContainer.innerHTML = '<div class="empty-message">搜索失败</div>';
+                }
+            }
+
+            // 渲染搜索结果
+            renderSearchResults(users) {
+                const container = document.getElementById('navSearchResults');
+                
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<div class="empty-message">未找到用户</div>';
+                    return;
+                }
+
+                container.innerHTML = users.slice(0, 3).map(user => `
+                    <div class="user-item">
+                        <div class="user-avatar-small">${user.username.charAt(0).toUpperCase()}</div>
+                        <div class="user-info-small">
+                            <div class="user-name-small">${this.escapeHtml(user.username)}</div>
+                            <div class="user-level-small">等级: ${user.level || 1}</div>
+                        </div>
+                        <div class="user-action-small">
+                            ${this.renderFriendshipAction(user)}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 渲染好友关系操作
+            renderFriendshipAction(user) {
+                switch (user.friendshipStatus) {
+                    case 'accepted':
+                        return '<span class="status-text-small">已是好友</span>';
+                    case 'pending':
+                        return '<span class="status-text-small">已申请</span>';
+                    case 'rejected':
+                        return `<button class="action-btn-small btn-add-small" onclick="navbarManager.friendsWidget.sendFriendRequest(${user.id})">重新申请</button>`;
+                    default:
+                        return `<button class="action-btn-small btn-add-small" onclick="navbarManager.friendsWidget.sendFriendRequest(${user.id})">添加</button>`;
+                }
+            }
+
+            // 发送好友申请
+            async sendFriendRequest(friendId) {
+                try {
+                    await this.makeRequest('/friends/request', 'POST', { friend_id: friendId });
+                    this.showMessage('好友申请发送成功', 'success');
+                    this.searchUsers(); // 重新搜索以更新状态
+                } catch (error) {
+                    console.error('发送好友申请失败:', error);
+                    this.showMessage('发送好友申请失败', 'error');
+                }
+            }
+
+            // 加载好友申请
+            async loadFriendRequests() {
+                try {
+                    const response = await this.makeRequest('/friends/requests');
+                    const requests = response.requests || [];
+                    this.renderFriendRequests(requests);
+                    this.updateRequestBadge(requests.length);
+                } catch (error) {
+                    console.error('加载好友申请失败:', error);
+                    document.getElementById('navFriendRequests').innerHTML = '<div class="empty-message">加载失败</div>';
+                }
+            }
+
+            // 渲染好友申请
+            renderFriendRequests(requests) {
+                const container = document.getElementById('navFriendRequests');
+                
+                if (!requests || requests.length === 0) {
+                    container.innerHTML = '<div class="empty-message">暂无好友申请</div>';
+                    return;
+                }
+
+                container.innerHTML = requests.slice(0, 3).map(request => `
+                    <div class="user-item">
+                        <div class="user-avatar-small">${request.username.charAt(0).toUpperCase()}</div>
+                        <div class="user-info-small">
+                            <div class="user-name-small">${this.escapeHtml(request.username)}</div>
+                            <div class="user-level-small">${this.formatDate(request.created_at)}</div>
+                        </div>
+                        <div class="user-action-small">
+                            <button class="action-btn-small btn-accept-small" onclick="navbarManager.friendsWidget.respondToRequest(${request.id}, 'accept')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn-small btn-reject-small" onclick="navbarManager.friendsWidget.respondToRequest(${request.id}, 'reject')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 响应好友申请
+            async respondToRequest(requestId, action) {
+                try {
+                    await this.makeRequest(`/friends/request/${requestId}`, 'POST', { action });
+                    const actionText = action === 'accept' ? '接受' : '拒绝';
+                    this.showMessage(`已${actionText}好友申请`, 'success');
+                    this.loadFriendRequests();
+                    if (action === 'accept') {
+                        this.loadFriends();
+                    }
+                } catch (error) {
+                    console.error('处理好友申请失败:', error);
+                    this.showMessage('处理好友申请失败', 'error');
+                }
+            }
+
+            // 加载好友列表
+            async loadFriends() {
+                try {
+                    const response = await this.makeRequest('/friends');
+                    const friends = response.friends || [];
+                    this.renderFriends(friends);
+                } catch (error) {
+                    console.error('加载好友列表失败:', error);
+                    document.getElementById('navFriendsList').innerHTML = '<div class="empty-message">加载失败</div>';
+                }
+            }
+
+            // 渲染好友列表
+            renderFriends(friends) {
+                const container = document.getElementById('navFriendsList');
+                
+                if (!friends || friends.length === 0) {
+                    container.innerHTML = '<div class="empty-message">暂无好友</div>';
+                    return;
+                }
+
+                container.innerHTML = friends.slice(0, 4).map(friend => `
+                    <div class="user-item">
+                        <div class="user-avatar-small">${friend.username.charAt(0).toUpperCase()}</div>
+                        <div class="user-info-small">
+                            <div class="user-name-small">${this.escapeHtml(friend.username)}</div>
+                            <div class="user-level-small">等级: ${friend.level || 1}</div>
+                        </div>
+                        <div class="user-action-small">
+                            <button class="action-btn-small btn-chat-small" onclick="navbarManager.friendsWidget.startChat(${friend.id})">
+                                <i class="fas fa-comments"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 开始聊天
+            startChat(friendId) {
+                window.location.href = `chat.html?friend=${friendId}`;
+            }
+
+            // 更新申请数量徽章
+            updateRequestBadge(count) {
+                const navBadge = document.getElementById('friendRequestBadge');
+                const countBadge = document.getElementById('requestCountBadge');
+                
+                if (count > 0) {
+                    const displayCount = count > 99 ? '99+' : count.toString();
+                    if (navBadge) {
+                        navBadge.textContent = displayCount;
+                        navBadge.style.display = 'flex';
+                    }
+                    if (countBadge) {
+                        countBadge.textContent = displayCount;
+                        countBadge.style.display = 'inline';
+                    }
+                } else {
+                    if (navBadge) navBadge.style.display = 'none';
+                    if (countBadge) countBadge.style.display = 'none';
+                }
+            }
+
+            // API请求
+            async makeRequest(endpoint, method = 'GET', body = null) {
+                const API_BASE_URL = 'http://localhost:3000/api';
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+
+                const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const config = {
+                    method,
+                    headers
+                };
+
+                if (body) {
+                    config.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: '请求失败' }));
+                    throw new Error(errorData.error || '请求失败');
+                }
+
+                return await response.json();
+            }
+
+            // 显示消息提示
+            showMessage(message, type = 'info') {
+                const messageEl = document.createElement('div');
+                messageEl.className = `navbar-message navbar-message-${type}`;
+                messageEl.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#238636' : type === 'error' ? '#da3633' : '#58a6ff'};
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    z-index: 10000;
+                    font-size: 14px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                `;
+                messageEl.textContent = message;
+
+                document.body.appendChild(messageEl);
+
+                setTimeout(() => {
+                    messageEl.style.opacity = '1';
+                    messageEl.style.transform = 'translateX(0)';
+                }, 10);
+
+                setTimeout(() => {
+                    messageEl.style.opacity = '0';
+                    messageEl.style.transform = 'translateX(100%)';
+                    setTimeout(() => document.body.removeChild(messageEl), 300);
+                }, 2000);
+            }
+
+            // 格式化日期
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = Math.abs(now - date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) return '今天';
+                if (diffDays <= 7) return `${diffDays}天前`;
+                return date.toLocaleDateString('zh-CN');
+            }
+
+            // 转义HTML
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
             }
         }
 
@@ -341,4 +1062,4 @@
         window.navbarManager = navbarManager;
     </script>
 </body>
-</html> 
+</html>

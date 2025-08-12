@@ -779,4 +779,39 @@ body {
 .form-control:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
+}
+
+/* ===========================
+   徽章组件
+   =========================== */
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #da3633;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.2;
+    z-index: 10;
+}
+
+.badge.badge-primary {
+    background: var(--primary);
+}
+
+.badge.badge-success {
+    background: var(--success);
+}
+
+.badge.badge-warning {
+    background: var(--warning);
+}
+
+.badge.badge-info {
+    background: var(--info);
 } 

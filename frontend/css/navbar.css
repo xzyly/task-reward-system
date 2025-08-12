@@ -1,0 +1,539 @@
+/* 导航栏基础样式 */
+.navbar {
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(240, 246, 252, 0.1);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #58a6ff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-brand:hover {
+    color: #79c0ff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-link {
+    color: #f0f6fc;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-link:hover {
+    background: rgba(240, 246, 252, 0.06);
+    color: #58a6ff;
+}
+
+.nav-link.active {
+    background: rgba(88, 166, 255, 0.1);
+    color: #58a6ff;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8b949e;
+    font-size: 0.9rem;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-login, .btn-register {
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-login {
+    background: transparent;
+    color: #f0f6fc;
+    border: 1px solid rgba(240, 246, 252, 0.2);
+}
+
+.btn-login:hover {
+    background: rgba(240, 246, 252, 0.06);
+    border-color: rgba(240, 246, 252, 0.3);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-register:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.logout-btn {
+    background: #da3633;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+    background: #c5282f;
+    transform: translateY(-1px);
+}
+
+/* 好友下拉菜单样式 */
+.nav-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: 20px;
+    background: #da3633;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.dropdown-arrow {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.dropdown-toggle.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(240, 246, 252, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    min-width: 350px;
+    max-width: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.dropdown-content.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-section {
+    padding: 16px;
+    border-bottom: 1px solid rgba(240, 246, 252, 0.1);
+}
+
+.dropdown-section:last-child {
+    border-bottom: none;
+}
+
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #f0f6fc;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.count-badge {
+    background: #58a6ff;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: auto;
+}
+
+.search-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.dropdown-search-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid rgba(240, 246, 252, 0.2);
+    border-radius: 6px;
+    background: rgba(240, 246, 252, 0.05);
+    color: #f0f6fc;
+    font-size: 13px;
+}
+
+.dropdown-search-input::placeholder {
+    color: #8b949e;
+}
+
+.dropdown-search-input:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+}
+
+.dropdown-search-btn {
+    padding: 8px 12px;
+    background: #58a6ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-search-btn:hover {
+    background: #79c0ff;
+}
+
+.search-results-container,
+.friend-requests-container,
+.friends-list-container {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(240, 246, 252, 0.05);
+}
+
+.user-item:last-child {
+    border-bottom: none;
+}
+
+.user-avatar-small {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.user-info-small {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-name-small {
+    color: #f0f6fc;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-level-small {
+    color: #8b949e;
+    font-size: 11px;
+}
+
+.user-action-small {
+    display: flex;
+    gap: 4px;
+}
+
+.action-btn-small {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-add-small {
+    background: #238636;
+    color: white;
+}
+
+.btn-add-small:hover {
+    background: #2ea043;
+}
+
+.btn-accept-small {
+    background: #238636;
+    color: white;
+}
+
+.btn-accept-small:hover {
+    background: #2ea043;
+}
+
+.btn-reject-small {
+    background: #da3633;
+    color: white;
+}
+
+.btn-reject-small:hover {
+    background: #c5282f;
+}
+
+.btn-chat-small {
+    background: #58a6ff;
+    color: white;
+}
+
+.btn-chat-small:hover {
+    background: #79c0ff;
+}
+
+.empty-message {
+    color: #8b949e;
+    font-size: 12px;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.status-text-small {
+    font-size: 11px;
+    color: #8b949e;
+}
+
+.dropdown-footer {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(240, 246, 252, 0.1);
+}
+
+.dropdown-link-full {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-link-full:hover {
+    background: rgba(88, 166, 255, 0.1);
+    color: #79c0ff;
+}
+
+/* 用户下拉菜单样式 */
+.user-menu {
+    position: relative;
+}
+
+.user-dropdown {
+    position: relative;
+}
+
+.user-info-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid rgba(240, 246, 252, 0.2);
+    border-radius: 8px;
+    color: #8b949e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.user-info-btn:hover {
+    background: rgba(240, 246, 252, 0.06);
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: rgba(13, 17, 23, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(240, 246, 252, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    color: #8b949e;
+    text-decoration: none;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background: rgba(240, 246, 252, 0.06);
+    color: #58a6ff;
+}
+
+.dropdown-item:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(240, 246, 252, 0.1);
+    margin: 4px 0;
+}
+
+/* 移动端响应式 */
+@media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .nav-links {
+        order: 1;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-link {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+
+    .nav-user {
+        order: 0;
+    }
+
+    .dropdown-content {
+        min-width: 300px;
+        max-width: 90vw;
+        left: -50px;
+    }
+}

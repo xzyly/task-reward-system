@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友管理 - TaskReward</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/navbar.css" rel="stylesheet">
+    <style>
+        .friends-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .friends-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .friends-header h1 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+
+        .friends-tabs {
+            display: flex;
+            background: rgba(13, 17, 23, 0.8);
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 30px;
+            gap: 8px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: #8b949e;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .tab-button.active {
+            background: #58a6ff;
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(240, 246, 252, 0.06);
+            color: #f0f6fc;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 搜索用户样式 */
+        .search-section {
+            background: rgba(13, 17, 23, 0.8);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(240, 246, 252, 0.2);
+            border-radius: 8px;
+            background: rgba(240, 246, 252, 0.05);
+            color: #f0f6fc;
+            font-size: 14px;
+        }
+
+        .search-input::placeholder {
+            color: #8b949e;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background: #58a6ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #79c0ff;
+            transform: translateY(-1px);
+        }
+
+        /* 用户列表样式 */
+        .user-list, .friend-list, .request-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .user-card, .friend-card, .request-card {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover, .friend-card:hover, .request-card:hover {
+            border-color: rgba(88, 166, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            color: #f0f6fc;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .user-level {
+            color: #8b949e;
+            font-size: 14px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #2ea043;
+        }
+
+        .btn-add:disabled {
+            background: #656d76;
+            cursor: not-allowed;
+        }
+
+        .btn-accept {
+            background: #238636;
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #2ea043;
+        }
+
+        .btn-reject {
+            background: #da3633;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c5282f;
+        }
+
+        .btn-chat {
+            background: #58a6ff;
+            color: white;
+        }
+
+        .btn-chat:hover {
+            background: #79c0ff;
+        }
+
+        .btn-remove {
+            background: transparent;
+            color: #da3633;
+            border: 1px solid #da3633;
+        }
+
+        .btn-remove:hover {
+            background: #da3633;
+            color: white;
+        }
+
+        .status-text {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b949e;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #8b949e;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 请求时间 */
+        .request-time {
+            color: #8b949e;
+            font-size: 12px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .friends-container {
+                padding: 15px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .user-card, .friend-card, .request-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-actions {
+                justify-content: center;
+            }
+
+            .friends-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div id="navbar-placeholder"></div>
+
+    <div class="friends-container">
+        <div class="friends-header">
+            <h1><i class="fas fa-users"></i> 好友管理</h1>
+            <p>搜索用户，管理好友关系</p>
+        </div>
+
+        <!-- 标签页导航 -->
+        <div class="friends-tabs">
+            <button class="tab-button active" data-tab="search">
+                <i class="fas fa-search"></i> 搜索用户
+            </button>
+            <button class="tab-button" data-tab="friends">
+                <i class="fas fa-users"></i> 我的好友
+            </button>
+            <button class="tab-button" data-tab="requests">
+                <i class="fas fa-user-plus"></i> 好友申请
+                <span id="requestBadge" class="badge" style="display: none;"></span>
+            </button>
+        </div>
+
+        <!-- 搜索用户 -->
+        <div id="search-tab" class="tab-content active">
+            <div class="search-section">
+                <h3><i class="fas fa-search"></i> 搜索用户</h3>
+                <div class="search-form">
+                    <input type="text" id="searchInput" class="search-input" placeholder="输入用户名进行搜索...">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </div>
+            </div>
+            <div id="searchResults" class="user-list"></div>
+        </div>
+
+        <!-- 我的好友 -->
+        <div id="friends-tab" class="tab-content">
+            <div id="friendsList" class="friend-list"></div>
+        </div>
+
+        <!-- 好友申请 -->
+        <div id="requests-tab" class="tab-content">
+            <div id="requestsList" class="request-list"></div>
+        </div>
+    </div>
+
+    <script type="module" src="js/friends.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+        // 加载导航栏并初始化（确保脚本执行与登录状态渲染）
+        fetch('navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                const container = document.getElementById('navbar-placeholder');
+                container.innerHTML = html;
+                // 插入HTML后显式初始化导航栏逻辑
+                if (window.NavbarManager) {
+                    window.navbarManager = new window.NavbarManager();
+                }
+            })
+            .catch(error => console.error('加载导航栏失败:', error));
+    </script>
+</body>
+</html>

@@ -6,48 +6,104 @@
     <title>任务悬赏平台 - 让技能与需求完美匹配</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet">
+    <link href="css/navbar.css" rel="stylesheet">
 </head>
 <body>
-    <!-- 导航栏 - Freelancer风格 -->
+    <!-- 导航栏 -->
     <nav class="navbar" id="navbar">
-        <div class="navbar-container">
-            <a href="index.html" class="navbar-brand">
-                <i class="fas fa-briefcase"></i>
-                TaskHub
-            </a>
-            <ul class="navbar-nav">
-                <li><a href="index.html" class="nav-link active">首页</a></li>
-                <li><a href="taskList.html" class="nav-link">任务大厅</a></li>
-                <li><a href="publishTask.html" class="nav-link">发布任务</a></li>
-                <li><a href="myself.html" class="nav-link">个人中心</a></li>
-                <!-- 未登录状态 -->
-                <li id="login-btn" style="display: none;"><a href="auth.html" class="nav-link btn btn-primary">登录/注册</a></li>
-                <!-- 已登录状态 -->
-                <li id="user-menu" class="user-menu" style="display: none;">
-                    <div class="user-dropdown">
-                        <button class="user-info-btn" id="userInfoBtn">
-                            <i class="fas fa-user"></i>
-                            <span id="username">用户名</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-menu" id="userDropdown">
-                            <a href="myself.html" class="dropdown-item">
-                                <i class="fas fa-user"></i>
-                                个人中心
-                            </a>
-                            <a href="publishTask.html" class="dropdown-item">
-                                <i class="fas fa-plus"></i>
-                                发布任务
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item" id="logoutBtn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                退出登录
-                            </button>
+        <div class="container">
+            <div class="nav-content">
+                <a href="taskList.html" class="nav-brand">
+                    <i class="fas fa-tasks"></i>
+                    TaskReward
+                </a>
+                
+                <div class="nav-links" id="navLinks">
+                    <a href="taskList.html" class="nav-link" data-page="taskList">
+                        <i class="fas fa-home"></i> 首页
+                    </a>
+                    <a href="publishTask.html" class="nav-link" data-page="publishTask">
+                        <i class="fas fa-plus"></i> 发布任务
+                    </a>
+                    <!-- 好友功能下拉菜单 -->
+                    <div class="nav-dropdown" id="friendsDropdown" style="display: none;">
+                        <a href="#" class="nav-link dropdown-toggle" data-page="friends">
+                            <i class="fas fa-users"></i> 好友
+                            <span id="friendRequestBadge" class="notification-badge" style="display: none;"></span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </a>
+                        <div class="dropdown-content" id="friendsDropdownContent">
+                            <!-- 搜索用户 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-search"></i> 搜索用户
+                                </div>
+                                <div class="search-container">
+                                    <input type="text" id="navSearchInput" class="dropdown-search-input" placeholder="输入用户名...">
+                                    <button id="navSearchBtn" class="dropdown-search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <div id="navSearchResults" class="search-results-container"></div>
+                            </div>
+                            
+                            <!-- 好友申请 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-user-plus"></i> 好友申请
+                                    <span id="requestCountBadge" class="count-badge" style="display: none;"></span>
+                                </div>
+                                <div id="navFriendRequests" class="friend-requests-container">
+                                    <div class="empty-message">暂无好友申请</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 我的好友 -->
+                            <div class="dropdown-section">
+                                <div class="dropdown-header">
+                                    <i class="fas fa-users"></i> 我的好友
+                                </div>
+                                <div id="navFriendsList" class="friends-list-container">
+                                    <div class="empty-message">暂无好友</div>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown-footer">
+                                <a href="friends.html" class="dropdown-link-full">
+                                    <i class="fas fa-external-link-alt"></i> 查看完整好友管理
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </li>
-            </ul>
+                    <a href="chat.html" class="nav-link" data-page="chat">
+                        <i class="fas fa-comments"></i> 聊天
+                    </a>
+                    <a href="myself.html" class="nav-link" data-page="myself">
+                        <i class="fas fa-user"></i> 个人中心
+                    </a>
+                </div>
+
+                <div class="nav-user" id="navUser">
+                    <!-- 未登录状态 -->
+                    <div class="auth-buttons" id="authButtons">
+                        <a href="auth.html" class="btn-login">
+                            <i class="fas fa-sign-in-alt"></i> 登录
+                        </a>
+                        <a href="auth.html" class="btn-register">
+                            <i class="fas fa-user-plus"></i> 注册
+                        </a>
+                    </div>
+                    
+                    <!-- 登录状态 -->
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span id="userName">用户</span>
+                        <button class="logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> 退出
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -589,6 +645,7 @@
     <!-- JavaScript -->
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/navbar.js"></script>
     <script>
         // 导航栏滚动效果
         window.addEventListener('scroll', function() {
@@ -705,9 +762,6 @@
 
         // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
-            // 检查登录状态并更新导航栏
-            updateNavbar();
-            
             loadLatestTasks();
             
             // 添加进入动画
@@ -718,81 +772,6 @@
                 });
             }, 100);
         });
-
-        // 更新导航栏显示
-        function updateNavbar() {
-            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-            const userData = getUserData();
-            const loginBtn = document.getElementById('login-btn');
-            const userMenu = document.getElementById('user-menu');
-            const usernameSpan = document.getElementById('username');
-
-            if (token && userData) {
-                // 已登录状态
-                loginBtn.style.display = 'none';
-                userMenu.style.display = 'block';
-                usernameSpan.textContent = userData.username || '用户';
-                
-                // 绑定下拉菜单事件
-                bindUserMenuEvents();
-            } else {
-                // 未登录状态
-                loginBtn.style.display = 'block';
-                userMenu.style.display = 'none';
-            }
-        }
-
-        // 绑定用户菜单事件
-        function bindUserMenuEvents() {
-            const userInfoBtn = document.getElementById('userInfoBtn');
-            const userDropdown = document.getElementById('userDropdown');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            // 点击用户信息按钮切换下拉菜单
-            userInfoBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
-
-            // 点击页面其他地方关闭下拉菜单
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
-
-            // 退出登录
-            logoutBtn.addEventListener('click', function() {
-                if (confirm('确定要退出登录吗？')) {
-                    // 清除所有登录信息
-                    ['token', 'authToken', 'userData', 'username', 'userId'].forEach(key => {
-                        localStorage.removeItem(key);
-                    });
-                    
-                    // 刷新页面
-                    window.location.reload();
-                }
-            });
-        }
-
-        // 获取用户数据
-        function getUserData() {
-            try {
-                const userData = localStorage.getItem('userData');
-                if (userData) {
-                    return JSON.parse(userData);
-                }
-                
-                // 如果没有完整用户数据，尝试从其他字段获取
-                const username = localStorage.getItem('username');
-                if (username) {
-                    return { username: username };
-                }
-                
-                return null;
-            } catch (e) {
-                console.warn('解析用户数据失败:', e);
-                return null;
-            }
-        }
 
         // 工具函数
         function formatDate(dateString) {

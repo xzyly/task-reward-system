@@ -13,19 +13,12 @@ async function makeRequest(endpoint, method = 'GET', body = null, auth = true) {
 
 
     if (auth) {
-
-        const token = localStorage.getItem('token');
-
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         if (!token) {
-
-            window.location.href = '/auth.html';
-
+            window.location.href = 'auth.html';
             return;
-
         }
-
         headers['Authorization'] = `Bearer ${token}`;
-
     }
 
 
@@ -108,4 +101,39 @@ export const taskAPI = {
 
     getMyTasks: () => makeRequest('/tasks/my-tasks')
 
+};
+
+export const friendAPI = {
+    // 搜索用户
+    searchUsers: (username) => makeRequest(`/friends/search?username=${encodeURIComponent(username)}`),
+    
+    // 发送好友申请
+    sendFriendRequest: (friendId) => makeRequest('/friends/request', 'POST', { friendId }),
+    
+    // 获取好友申请列表
+    getFriendRequests: () => makeRequest('/friends/requests'),
+    
+    // 处理好友申请
+    respondToRequest: (requestId, action) => makeRequest('/friends/respond', 'POST', { requestId, action }),
+    
+    // 获取好友列表
+    getFriends: () => makeRequest('/friends/list'),
+    
+    // 删除好友
+    removeFriend: (friendId) => makeRequest('/friends/remove', 'POST', { friendId })
+};
+
+export const messageAPI = {
+    // 发送消息
+    sendMessage: (receiverId, content) => makeRequest('/messages/send', 'POST', { receiverId, content }),
+    
+    // 获取聊天记录
+    getHistory: (friendId, page = 1, limit = 50) => 
+        makeRequest(`/messages/history?friendId=${friendId}&page=${page}&limit=${limit}`),
+    
+    // 获取未读消息统计
+    getUnreadStats: () => makeRequest('/messages/unread'),
+    
+    // 获取会话列表
+    getConversations: () => makeRequest('/messages/conversations')
 };
